@@ -36,7 +36,7 @@ const buildJsonLd = (values) =>
  * }} input
  * @returns {string}
  */
-export const buildHeadMetaBlock = ({
+const buildHeadMetaBlock = ({
   title,
   description,
   canonicalPath,

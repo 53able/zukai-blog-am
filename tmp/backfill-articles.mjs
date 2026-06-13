@@ -93,8 +93,7 @@ const replaceFooter = (html) =>
  */
 const backfillArticle = async (fileName) => {
   const filePath = path.join(ARTICLES_DIR, fileName);
-  const rawHtml = await readFile(filePath, "utf8");
-  const html = rawHtml;
+  const html = await readFile(filePath, "utf8");
   const source = extractAlgomaticSource(html);
 
   if (!source) {

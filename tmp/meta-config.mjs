@@ -7,7 +7,6 @@
 export const SITE = {
   origin: "https://53able.github.io/zukai-blog-am",
   name: "Algomatic Tech Blog 図解ギャラリー",
-  shortName: "図解ギャラリー",
   description:
     "Algomatic Tech Blog の記事を zukai-creator で再構成した非公式図解一覧です。",
   locale: "ja_JP",
