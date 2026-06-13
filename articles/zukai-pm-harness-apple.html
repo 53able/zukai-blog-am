@@ -1,0 +1,725 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PMOをAIに任せるのではない</title>
+  <style>
+    :root {
+      --primary: #0066cc;
+      --primary-dark: #2997ff;
+      --ink: #1d1d1f;
+      --ink-muted: #333333;
+      --muted: #7a7a7a;
+      --hairline: #e0e0e0;
+      --divider: #f0f0f0;
+      --canvas: #ffffff;
+      --parchment: #f5f5f7;
+      --pearl: #fafafc;
+      --dark-1: #272729;
+      --dark-2: #2a2a2c;
+      --white: #ffffff;
+      --radius-lg: 18px;
+      --radius-pill: 9999px;
+      --font-display: "SF Pro Display", system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+      --font-text: "SF Pro Text", system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: var(--font-text);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+    }
+
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .hero {
+      min-height: 42vh;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 80px 24px 64px;
+      background: var(--canvas);
+    }
+
+    .hero-inner { max-width: 980px; }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--primary);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+      margin-bottom: 18px;
+    }
+
+    .kicker-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+
+    h1 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(40px, 5vw, 64px);
+      font-weight: 600;
+      line-height: 1.07;
+      letter-spacing: -0.28px;
+    }
+
+    .lead {
+      max-width: 860px;
+      margin: 24px auto 0;
+      font-family: var(--font-display);
+      font-size: clamp(21px, 2.4vw, 28px);
+      font-weight: 400;
+      line-height: 1.25;
+      letter-spacing: 0.196px;
+      color: var(--ink-muted);
+    }
+
+    .source-note {
+      margin-top: 28px;
+      font-size: 14px;
+      line-height: 1.43;
+      letter-spacing: -0.224px;
+      color: var(--muted);
+    }
+
+    .section-head {
+      max-width: 940px;
+      margin: 0 auto 44px;
+      text-align: center;
+    }
+
+    h2 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(34px, 3vw, 44px);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.28px;
+    }
+
+    .section-head p {
+      max-width: 800px;
+      margin: 16px auto 0;
+      color: var(--ink-muted);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+    }
+
+    .agent-section {
+      background: var(--parchment);
+      padding: 80px 24px 88px;
+    }
+
+    .agent-grid {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 0.78fr 1.22fr;
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .model-card {
+      background: var(--canvas);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-lg);
+      padding: clamp(34px, 5vw, 56px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 520px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-self: flex-start;
+      padding: 8px 15px;
+      border-radius: var(--radius-pill);
+      background: var(--primary);
+      color: var(--white);
+      font-size: 14px;
+      line-height: 1.29;
+      letter-spacing: -0.224px;
+    }
+
+    .model-card h2, .harness-card h2 { margin-top: 28px; }
+
+    .body-copy {
+      margin: 14px 0 0;
+      color: var(--ink-muted);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+    }
+
+    .formula {
+      margin-top: 36px;
+      padding: 20px 22px;
+      border-radius: var(--radius-lg);
+      background: var(--parchment);
+      border: 1px solid var(--divider);
+      font-family: var(--font-display);
+      font-size: clamp(24px, 2.4vw, 34px);
+      font-weight: 600;
+      line-height: 1.14;
+      letter-spacing: -0.28px;
+      text-align: center;
+    }
+
+    .harness-card {
+      background: var(--dark-1);
+      color: var(--white);
+      border-radius: var(--radius-lg);
+      padding: clamp(34px, 5vw, 56px);
+      min-height: 520px;
+    }
+
+    .harness-card .body-copy { color: #cccccc; }
+
+    .harness-parts {
+      margin-top: 34px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .part {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      min-height: 180px;
+    }
+
+    .part small {
+      display: inline-flex;
+      padding: 7px 11px;
+      border-radius: var(--radius-pill);
+      color: var(--primary-dark);
+      background: rgba(41,151,255,0.13);
+      border: 1px solid rgba(41,151,255,0.22);
+      font-size: 12px;
+      line-height: 1;
+      letter-spacing: -0.12px;
+      margin-bottom: 14px;
+    }
+
+    .part strong {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 600;
+      line-height: 1.12;
+      letter-spacing: -0.28px;
+      margin-bottom: 10px;
+    }
+
+    .part span {
+      color: #cccccc;
+      font-size: 14px;
+      line-height: 1.43;
+      letter-spacing: -0.224px;
+    }
+
+    .mapping-section {
+      background: var(--canvas);
+      padding: 86px 24px 92px;
+    }
+
+    .mapping-table {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      gap: 14px;
+    }
+
+    .map-row {
+      display: grid;
+      grid-template-columns: 1fr 80px 1fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .map-cell {
+      background: var(--parchment);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      text-align: left;
+    }
+
+    .map-cell.dark {
+      background: var(--dark-2);
+      color: var(--white);
+      border-color: var(--dark-2);
+    }
+
+    .map-cell strong {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 600;
+      line-height: 1.14;
+      letter-spacing: -0.28px;
+      margin-bottom: 10px;
+    }
+
+    .map-cell span {
+      color: var(--ink-muted);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+    }
+
+    .map-cell.dark span { color: #cccccc; }
+
+    .arrow {
+      align-self: center;
+      height: 1px;
+      background: var(--primary);
+      position: relative;
+    }
+
+    .arrow::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      top: -5px;
+      width: 11px;
+      height: 11px;
+      border-top: 1px solid var(--primary);
+      border-right: 1px solid var(--primary);
+      transform: rotate(45deg);
+    }
+
+    .implementation-section {
+      background: var(--parchment);
+      padding: 86px 24px 92px;
+    }
+
+    .implementation-grid {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .tree-card, .split-card {
+      background: var(--canvas);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-lg);
+      padding: 34px;
+    }
+
+    .tree {
+      margin: 0;
+      padding: 0;
+      white-space: pre-wrap;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--ink-muted);
+    }
+
+    .split-grid {
+      display: grid;
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .split-item {
+      background: var(--parchment);
+      border: 1px solid var(--divider);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+    }
+
+    .split-item strong {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 600;
+      line-height: 1.14;
+      letter-spacing: -0.28px;
+      margin-bottom: 8px;
+    }
+
+    .split-item span {
+      color: var(--ink-muted);
+      font-size: 14px;
+      line-height: 1.43;
+      letter-spacing: -0.224px;
+    }
+
+    .loop-section {
+      background: var(--dark-2);
+      color: var(--white);
+      padding: 90px 24px 96px;
+    }
+
+    .loop-section .section-head p { color: #cccccc; }
+
+    .loop-grid {
+      max-width: 1180px;
+      margin: 44px auto 0;
+      display: grid;
+      grid-template-columns: 1fr 70px 1fr 70px 1fr;
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .loop-card {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: var(--radius-lg);
+      padding: 30px;
+      min-height: 260px;
+      text-align: left;
+    }
+
+    .loop-card small {
+      display: inline-flex;
+      padding: 7px 11px;
+      border-radius: var(--radius-pill);
+      color: var(--primary-dark);
+      background: rgba(41,151,255,0.13);
+      border: 1px solid rgba(41,151,255,0.22);
+      font-size: 12px;
+      line-height: 1;
+      letter-spacing: -0.12px;
+      margin-bottom: 18px;
+    }
+
+    .loop-card strong {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 30px;
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.28px;
+      margin-bottom: 14px;
+    }
+
+    .loop-card ul {
+      margin: 0;
+      padding-left: 1.1em;
+      color: #cccccc;
+      font-size: 14px;
+      line-height: 1.43;
+      letter-spacing: -0.224px;
+    }
+
+    .loop-arrow {
+      align-self: center;
+      height: 1px;
+      background: var(--primary-dark);
+      position: relative;
+    }
+
+    .loop-arrow::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      top: -5px;
+      width: 11px;
+      height: 11px;
+      border-top: 1px solid var(--primary-dark);
+      border-right: 1px solid var(--primary-dark);
+      transform: rotate(45deg);
+    }
+
+    .conclusion {
+      max-width: 860px;
+      margin: 44px auto 0;
+      background: var(--canvas);
+      color: var(--ink);
+      border-radius: var(--radius-lg);
+      padding: 34px 38px;
+      text-align: center;
+    }
+
+    .conclusion .pill { margin-bottom: 18px; }
+    .conclusion h2 { margin: 0; }
+    .conclusion p {
+      margin: 18px auto 0;
+      color: var(--ink-muted);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+    }
+
+    .boundary-section {
+      background: var(--canvas);
+      padding: 86px 24px 92px;
+    }
+
+    .boundary-grid {
+      max-width: 1180px;
+      margin: 42px auto 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .boundary-card {
+      border-radius: var(--radius-lg);
+      padding: 34px;
+      min-height: 340px;
+      text-align: left;
+    }
+
+    .boundary-card.ai {
+      background: var(--parchment);
+      border: 1px solid var(--hairline);
+    }
+
+    .boundary-card.human {
+      background: var(--dark-1);
+      color: var(--white);
+    }
+
+    .boundary-card h3 {
+      margin: 0 0 18px;
+      font-family: var(--font-display);
+      font-size: 34px;
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.28px;
+    }
+
+    .boundary-card ul {
+      margin: 0;
+      padding-left: 1.1em;
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+      color: var(--ink-muted);
+    }
+
+    .boundary-card.human ul { color: #cccccc; }
+
+    .footer {
+      background: var(--parchment);
+      padding: 38px 24px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+      letter-spacing: -0.12px;
+      text-align: center;
+    }
+
+    @media (max-width: 980px) {
+      .agent-grid, .implementation-grid, .boundary-grid { grid-template-columns: 1fr; }
+      .harness-parts { grid-template-columns: 1fr; }
+      .map-row { grid-template-columns: 1fr; }
+      .arrow { width: 1px; height: 38px; justify-self: center; }
+      .arrow::after { right: -5px; top: auto; bottom: 0; transform: rotate(135deg); }
+      .loop-grid { grid-template-columns: 1fr; }
+      .loop-arrow { width: 1px; height: 44px; justify-self: center; }
+      .loop-arrow::after { right: -5px; top: auto; bottom: 0; transform: rotate(135deg); }
+    }
+  </style>
+  <meta name="zukai:published" content="2026-06-05" />
+  <link rel="stylesheet" href="../assets/site-chrome.css" />
+</head>
+<body>
+  <nav class="site-chrome-nav" aria-label="サイト">
+    <div class="site-chrome-nav-inner">
+      <a href="../index.html">← 図解ギャラリー</a>
+      <a href="https://tech.algomatic.jp/entry/advent-calendar/2026-06/pm-harness">元記事を読む</a>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero" aria-labelledby="title">
+      <div class="hero-inner">
+        <div class="kicker"><span class="kicker-dot"></span>図解構成 / PM Harness Engineering</div>
+        <h1 id="title">PMOをAIに<br>任せるのではない。</h1>
+        <p class="lead">PMOの制御構造を、AIも扱える形にする。原則、危険信号、手順に分解し、最後の線引きは人間が握ります。</p>
+        <p class="source-note">Source: Algomatic Tech Blog「<a href="https://tech.algomatic.jp/entry/advent-calendar/2026-06/pm-harness">PM業務におけるハーネスエンジニアリング</a>」をもとに再構成。</p>
+      </div>
+    </section>
+
+    <section class="agent-section" aria-label="Agent equals Model plus Harness">
+      <div class="section-head">
+        <h2>Agent = Model + Harness</h2>
+        <p>モデルの賢さだけでは、自律的に動くAIを制御しきれません。ツール、権限、検証、ログ、実行ルールなど、外側の設計がハーネスです。</p>
+      </div>
+      <div class="agent-grid">
+        <article class="model-card">
+          <div>
+            <span class="pill">Model</span>
+            <h2>賢さ。</h2>
+            <p class="body-copy">LLMそのものの能力。回答し、推論し、ツール利用を選びます。ただし、何を許し、どこで止めるかはモデル単体では担えません。</p>
+          </div>
+          <div class="formula">Agent<br>= Model + Harness</div>
+        </article>
+        <article class="harness-card">
+          <span class="pill">Harness</span>
+          <h2>外側の設計。</h2>
+          <p class="body-copy">動く前に方向を示し、動いた後に異常を拾い、必要な時に定型手順を呼び出す制御レイヤーです。</p>
+          <div class="harness-parts">
+            <div class="part"><small>Feedforward</small><strong>Guide</strong><span>rules、前提、判断基準。動く前に方向をそろえる。</span></div>
+            <div class="part"><small>Feedback</small><strong>Sensor</strong><span>hooks、検証、危険信号。動いた後の異常を拾う。</span></div>
+            <div class="part"><small>Procedure</small><strong>Skill</strong><span>議事録、WBS、週次報告。必要なときだけ手順を回す。</span></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="mapping-section" aria-label="HarnessとPMO業務の対応">
+      <div class="section-head">
+        <h2>PMO業務は、人間が回してきた制御システムに近い。</h2>
+        <p>ハーネスの構造をPMOに置き換えると、原則、危険信号、業務手順に対応します。</p>
+      </div>
+      <div class="mapping-table">
+        <div class="map-row">
+          <div class="map-cell dark"><strong>Guide</strong><span>動く前に判断基準をそろえる。</span></div>
+          <div class="arrow" aria-hidden="true"></div>
+          <div class="map-cell"><strong>原則</strong><span>運営方針、リスク管理方針、共有ルール。何を守り、何を守らないかを宣言する。</span></div>
+        </div>
+        <div class="map-row">
+          <div class="map-cell dark"><strong>Sensor</strong><span>動いた後の異常を拾う。</span></div>
+          <div class="arrow" aria-hidden="true"></div>
+          <div class="map-cell"><strong>危険信号の検知</strong><span>期限超過、未対応リスク、Decision Drift、Open Question Agingを見張る。</span></div>
+        </div>
+        <div class="map-row">
+          <div class="map-cell dark"><strong>Skill</strong><span>決まった手順を再現する。</span></div>
+          <div class="arrow" aria-hidden="true"></div>
+          <div class="map-cell"><strong>業務手順</strong><span>議事録整理、WBS更新、週次報告、リスクチェックを同じ型で回す。</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="implementation-section" aria-label="PMOハーネスの実装イメージ">
+      <div class="section-head">
+        <h2>情報の置き場も、ハーネスの一部。</h2>
+        <p>人間が読むものとAIが処理するものを分け、判断基準と検知タイミングをプロジェクト内に置きます。</p>
+      </div>
+      <div class="implementation-grid">
+        <article class="tree-card">
+          <pre class="tree">my-project/
+├── CLAUDE.md            # 前提・運営原則
+├── .claude/
+│   ├── rules/           # 判断基準
+│   │   ├── pm-principles.md
+│   │   └── risk-management.md
+│   ├── hooks/           # 危険信号センサー
+│   ├── skills/          # 定型手順
+│   └── settings.json    # hooks登録
+├── docs/                # 人間向けMarkdown
+│   ├── PROJECT.md
+│   └── STAKEHOLDER.md
+└── state/               # AI向けJSON
+    ├── STATUS.json
+    ├── RISK.json
+    └── WBS.json</pre>
+        </article>
+        <article class="split-card">
+          <span class="pill">Design</span>
+          <h2 style="margin-top:28px;">docs と state を分ける。</h2>
+          <p class="body-copy">同じ情報でも、人間が判断するために読むものと、AIが安全に読み書きするものは形が違ってよい、という切り分けです。</p>
+          <div class="split-grid">
+            <div class="split-item"><strong>docs</strong><span>背景、文脈、関係者、方針。人間が読むMarkdown。</span></div>
+            <div class="split-item"><strong>state</strong><span>期限、リスク、WBS、状態。AIが検証しやすいJSON。</span></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="loop-section" aria-label="予防・検知・改善ループ">
+      <div class="section-head">
+        <h2>ミスが起きたら、出力ではなく仕組みを直す。</h2>
+        <p>ハーネスは作って終わりではありません。検知した不具合を改善リストに溜め、rules、hooks、skillsを育て続けます。</p>
+      </div>
+      <div class="loop-grid">
+        <article class="loop-card">
+          <small>Prevent</small>
+          <strong>予防</strong>
+          <ul>
+            <li>高リスクは緩和策なしで保存できない</li>
+            <li>外部送信は人間確認</li>
+            <li>決定履歴は追記のみ</li>
+          </ul>
+        </article>
+        <div class="loop-arrow" aria-hidden="true"></div>
+        <article class="loop-card">
+          <small>Detect</small>
+          <strong>検知</strong>
+          <ul>
+            <li>セッション開始時チェック</li>
+            <li>期限超過と未回答の問い</li>
+            <li>方針ズレと未対応リスク</li>
+          </ul>
+        </article>
+        <div class="loop-arrow" aria-hidden="true"></div>
+        <article class="loop-card">
+          <small>Improve</small>
+          <strong>改善</strong>
+          <ul>
+            <li>改善リストに溜める</li>
+            <li>週次で振り返る</li>
+            <li>ハーネス自体を直す</li>
+          </ul>
+        </article>
+      </div>
+      <div class="conclusion">
+        <span class="pill">Core Loop</span>
+        <h2>同じ見落としを、二度起こさない。</h2>
+        <p>人間の注意力ではなく、仕組みの側に学習を移します。PMやコンサルを代替するのではなく、危険信号に気づきやすくする制御レイヤーです。</p>
+      </div>
+    </section>
+
+    <section class="boundary-section" aria-label="AIに委ねる領域と人間が握る領域">
+      <div class="section-head">
+        <h2>最後に残る論点は、線引き。</h2>
+        <p>任せられる範囲が広がるほど、どこをAIに委ね、どこを人間が握るかを感覚ではなく仕組みとして決める必要があります。</p>
+      </div>
+      <div class="boundary-grid">
+        <article class="boundary-card ai">
+          <h3>AIに委ねやすい</h3>
+          <ul>
+            <li>期限超過の検知</li>
+            <li>未回答・未対応の洗い出し</li>
+            <li>週次レポート下書き</li>
+            <li>リスク一覧の再評価</li>
+            <li>議事録からの状態更新候補</li>
+          </ul>
+        </article>
+        <article class="boundary-card human">
+          <h3>人間が握る</h3>
+          <ul>
+            <li>最後の意思決定</li>
+            <li>顧客との信頼関係</li>
+            <li>社内の力学を踏まえた判断</li>
+            <li>何を検知しないか</li>
+            <li>ハーネス変更そのものの承認</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <footer class="footer site-chrome-footer">
+      <p>Algomatic Tech Blog の記事を zukai-creator で再構成した非公式図解です。</p>
+      <p>© 図解構成: Go (@53able) · Designed with Apple-style tokens</p>
+    </footer>
+  </main>
+</body>
+</html>

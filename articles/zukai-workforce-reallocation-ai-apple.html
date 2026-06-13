@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI時代の異動配置は、人をどう活かすかへ</title>
+  <style>
+    :root {
+      --primary: #0066cc;
+      --primary-dark: #2997ff;
+      --ink: #1d1d1f;
+      --ink-muted: #333333;
+      --muted: #7a7a7a;
+      --hairline: #e0e0e0;
+      --divider: #f0f0f0;
+      --canvas: #ffffff;
+      --parchment: #f5f5f7;
+      --dark-1: #272729;
+      --dark-2: #2a2a2c;
+      --white: #ffffff;
+      --radius-lg: 18px;
+      --radius-pill: 9999px;
+      --font-display: "SF Pro Display", system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+      --font-text: "SF Pro Text", system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: var(--font-text);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+    }
+
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .hero {
+      min-height: 44vh;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 84px 24px 68px;
+      background: var(--canvas);
+    }
+
+    .hero-inner { max-width: 1040px; }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--primary);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+      margin-bottom: 18px;
+    }
+
+    .kicker-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+
+    h1 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(40px, 5vw, 64px);
+      font-weight: 600;
+      line-height: 1.07;
+      letter-spacing: -0.28px;
+    }
+
+    .lead {
+      max-width: 900px;
+      margin: 24px auto 0;
+      font-family: var(--font-display);
+      font-size: clamp(21px, 2.4vw, 28px);
+      font-weight: 400;
+      line-height: 1.25;
+      letter-spacing: 0.196px;
+      color: var(--ink-muted);
+    }
+
+    .source-note {
+      margin-top: 28px;
+      font-size: 14px;
+      line-height: 1.43;
+      letter-spacing: -0.224px;
+      color: var(--muted);
+    }
+
+    .section-head {
+      max-width: 960px;
+      margin: 0 auto 44px;
+      text-align: center;
+    }
+
+    h2 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(34px, 3vw, 44px);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.28px;
+    }
+
+    .section-head p {
+      max-width: 840px;
+      margin: 16px auto 0;
+      color: var(--ink-muted);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+    }
+
+    .pill {
+      display: inline-flex;
+      padding: 8px 15px;
+      border-radius: var(--radius-pill);
+      background: var(--primary);
+      color: var(--white);
+      font-size: 14px;
+      line-height: 1.29;
+      letter-spacing: -0.224px;
+    }
+
+    .problem-section {
+      background: var(--parchment);
+      padding: 82px 24px 90px;
+    }
+
+    .constraint-grid {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .constraint-card {
+      min-height: 300px;
+      border-radius: var(--radius-lg);
+      background: var(--canvas);
+      border: 1px solid var(--hairline);
+      padding: 34px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .icon-circle {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: var(--white);
+      display: grid;
+      place-items: center;
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+    }
+
+    .icon-circle.gray {
+      background: #d2d2d7;
+      color: var(--ink);
+    }
+
+    .constraint-card h3,
+    .compare-card h3,
+    .task-card h3,
+    .skill-card h3,
+    .pipeline-card h3 {
+      margin: 24px 0 12px;
+      font-family: var(--font-display);
+      font-size: clamp(28px, 2.4vw, 36px);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.28px;
+    }
+
+    .constraint-card p,
+    .compare-card p,
+    .task-card p,
+    .skill-card p,
+    .pipeline-card p {
+      margin: 0;
+      color: var(--ink-muted);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 22px;
+    }
+
+    .chip {
+      display: inline-flex;
+      padding: 8px 12px;
+      border-radius: var(--radius-pill);
+      background: var(--parchment);
+      border: 1px solid var(--divider);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1;
+      letter-spacing: -0.12px;
+    }
+
+    .domino {
+      max-width: 980px;
+      margin: 28px auto 0;
+      padding: 24px 28px;
+      border-radius: var(--radius-lg);
+      background: var(--canvas);
+      border: 1px solid var(--hairline);
+      color: var(--ink-muted);
+      text-align: center;
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+    }
+    .domino strong { color: var(--ink); }
+
+    .compare-section {
+      background: var(--canvas);
+      padding: 88px 24px 96px;
+    }
+
+    .compare-grid {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 82px 1fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .compare-card {
+      border-radius: var(--radius-lg);
+      padding: clamp(34px, 4vw, 52px);
+      min-height: 480px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .compare-card.light {
+      background: var(--parchment);
+      border: 1px solid var(--hairline);
+    }
+
+    .compare-card.dark {
+      background: var(--dark-1);
+      color: var(--white);
+    }
+
+    .compare-card.dark p { color: #cccccc; }
+    .compare-card.dark .pill {
+      color: var(--primary-dark);
+      background: rgba(41,151,255,0.13);
+      border: 1px solid rgba(41,151,255,0.22);
+    }
+
+    .list {
+      display: grid;
+      gap: 10px;
+      margin-top: 30px;
+    }
+
+    .item {
+      padding: 14px 16px;
+      border-radius: 11px;
+      background: var(--canvas);
+      border: 1px solid var(--divider);
+      color: var(--ink-muted);
+      font-size: 14px;
+      line-height: 1.43;
+      letter-spacing: -0.224px;
+    }
+
+    .dark .item {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.14);
+      color: #cccccc;
+    }
+
+    .center-arrow {
+      align-self: center;
+      height: 1px;
+      background: var(--primary);
+      position: relative;
+    }
+    .center-arrow::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      top: -5px;
+      width: 11px;
+      height: 11px;
+      border-top: 1px solid var(--primary);
+      border-right: 1px solid var(--primary);
+      transform: rotate(45deg);
+    }
+
+    .task-section {
+      background: var(--parchment);
+      padding: 86px 24px 92px;
+    }
+
+    .task-card {
+      max-width: 1060px;
+      margin: 0 auto;
+      background: var(--canvas);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-lg);
+      padding: clamp(34px, 4vw, 52px);
+    }
+
+    .task-map {
+      margin-top: 30px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .task-row {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1.2fr;
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .task-cell {
+      padding: 14px 16px;
+      border-radius: 11px;
+      background: var(--parchment);
+      border: 1px solid var(--divider);
+      color: var(--ink-muted);
+      font-size: 14px;
+      line-height: 1.43;
+      letter-spacing: -0.224px;
+    }
+
+    .task-cell.impact {
+      color: var(--primary);
+      background: rgba(0,102,204,0.08);
+      border-color: rgba(0,102,204,0.16);
+      text-align: center;
+    }
+
+    .source-band {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .source-card {
+      padding: 18px;
+      border-radius: 14px;
+      background: var(--parchment);
+      border: 1px solid var(--divider);
+      color: var(--ink-muted);
+      font-size: 14px;
+      line-height: 1.43;
+      letter-spacing: -0.224px;
+    }
+
+    .skill-section {
+      background: var(--canvas);
+      padding: 86px 24px 92px;
+    }
+
+    .skill-layout {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1.05fr 1fr;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .skill-card {
+      min-height: 320px;
+      border-radius: var(--radius-lg);
+      background: var(--parchment);
+      border: 1px solid var(--hairline);
+      padding: 32px;
+    }
+
+    .skill-core {
+      min-height: 360px;
+      border-radius: var(--radius-lg);
+      background: var(--dark-1);
+      color: var(--white);
+      padding: 38px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+    }
+
+    .skill-core .pill {
+      color: var(--primary-dark);
+      background: rgba(41,151,255,0.13);
+      border: 1px solid rgba(41,151,255,0.22);
+      margin-bottom: 20px;
+    }
+
+    .skill-core strong {
+      display: block;
+      font-family: var(--font-display);
+      font-size: clamp(34px, 3vw, 48px);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.28px;
+    }
+
+    .skill-core span {
+      display: block;
+      margin-top: 16px;
+      color: #cccccc;
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+    }
+
+    .pipeline-section {
+      background: var(--dark-2);
+      color: var(--white);
+      padding: 90px 24px 98px;
+    }
+
+    .pipeline-section .section-head p { color: #cccccc; }
+
+    .pipeline {
+      max-width: 980px;
+      margin: 0 auto;
+      display: grid;
+      gap: 14px;
+      position: relative;
+    }
+
+    .pipeline-card {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: var(--radius-lg);
+      padding: 28px 32px;
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .pipeline-card .pill {
+      color: var(--primary-dark);
+      background: rgba(41,151,255,0.13);
+      border: 1px solid rgba(41,151,255,0.22);
+      justify-self: start;
+    }
+
+    .pipeline-card h3 {
+      margin: 0 0 8px;
+      color: var(--white);
+      font-size: 26px;
+    }
+
+    .pipeline-card p { color: #cccccc; }
+
+    .down {
+      width: 1px;
+      height: 26px;
+      background: var(--primary-dark);
+      justify-self: center;
+      position: relative;
+    }
+    .down::after {
+      content: "";
+      position: absolute;
+      left: -5px;
+      bottom: 0;
+      width: 11px;
+      height: 11px;
+      border-right: 1px solid var(--primary-dark);
+      border-bottom: 1px solid var(--primary-dark);
+      transform: rotate(45deg);
+    }
+
+    .conclusion-section {
+      background: var(--parchment);
+      padding: 86px 24px 92px;
+    }
+
+    .conclusion {
+      max-width: 920px;
+      margin: 0 auto;
+      background: var(--canvas);
+      border: 1px solid var(--hairline);
+      color: var(--ink);
+      border-radius: var(--radius-lg);
+      padding: clamp(34px, 5vw, 58px);
+      text-align: center;
+    }
+
+    .conclusion h2 { margin-top: 28px; }
+    .conclusion p {
+      margin: 18px auto 0;
+      max-width: 780px;
+      color: var(--ink-muted);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+    }
+
+    .footer {
+      background: var(--parchment);
+      padding: 38px 24px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+      letter-spacing: -0.12px;
+      text-align: center;
+    }
+
+    @media (max-width: 980px) {
+      .constraint-grid, .compare-grid, .skill-layout, .source-band { grid-template-columns: 1fr; }
+      .center-arrow { width: 1px; height: 42px; justify-self: center; }
+      .center-arrow::after { right: -5px; top: auto; bottom: 0; transform: rotate(135deg); }
+      .task-row { grid-template-columns: 1fr; }
+      .pipeline-card { grid-template-columns: 1fr; }
+    }
+  </style>
+  <meta name="zukai:published" content="2026-06-11" />
+  <link rel="stylesheet" href="../assets/site-chrome.css" />
+</head>
+<body>
+  <nav class="site-chrome-nav" aria-label="サイト">
+    <div class="site-chrome-nav-inner">
+      <a href="../index.html">← 図解ギャラリー</a>
+      <a href="https://tech.algomatic.jp/entry/advent-calendar/2026-06/workforce-reallocation-ai">元記事を読む</a>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero" aria-labelledby="title">
+      <div class="hero-inner">
+        <div class="kicker"><span class="kicker-dot"></span>図解構成 / Workforce Reallocation in the AI Era</div>
+        <h1 id="title">AI時代の異動配置は、<br>「人をどう活かすか」へ。</h1>
+        <p class="lead">生成AIで業務・タスク・必要スキルが変わる。だから配置は、固定組織への割当ではなく、変化する組織への再設計になります。</p>
+        <p class="source-note">Source: Algomatic Tech Blog「<a href="https://tech.algomatic.jp/entry/advent-calendar/2026-06/workforce-reallocation-ai">AI時代の異動配置をどう考えるか</a>」、BCG、Anthropic、Japan AI Indexへの言及をもとに再構成。</p>
+      </div>
+    </section>
+
+    <section class="problem-section" aria-label="異動配置の難しさ">
+      <div class="section-head">
+        <h2>異動配置は、もともと巨大な組み合わせ問題。</h2>
+        <p>「この人はこの部署に合いそう」だけでは済みません。人、部署、制約、後任、育成、業務継続が同時に絡みます。</p>
+      </div>
+      <div class="constraint-grid">
+        <article class="constraint-card">
+          <div><div class="icon-circle">人</div><h3>社員ごとの条件。</h3><p>スキル、希望、等級、勤務地、経験、育成方針を見ます。</p></div>
+          <div class="chips"><span class="chip">skills</span><span class="chip">grade</span><span class="chip">location</span><span class="chip">preference</span></div>
+        </article>
+        <article class="constraint-card">
+          <div><div class="icon-circle gray">部</div><h3>部署ごとの制約。</h3><p>必要人数、後任、業務継続、部門間の利害調整が残ります。</p></div>
+          <div class="chips"><span class="chip">headcount</span><span class="chip">successor</span><span class="chip">continuity</span></div>
+        </article>
+        <article class="constraint-card">
+          <div><div class="icon-circle gray">連</div><h3>玉突きで連鎖する。</h3><p>1人を動かすと穴が空き、後任を動かすと別部署に穴が空きます。</p></div>
+          <div class="chips"><span class="chip">A → B → C</span><span class="chip">chain reaction</span><span class="chip">全社最適</span></div>
+        </article>
+      </div>
+      <div class="domino"><strong>問いは「Aさんに一番合う部署はどこか」ではありません。</strong><br>Aさんを動かしたとき、組織全体として最も良い状態は何かを考える必要があります。</div>
+    </section>
+
+    <section class="compare-section" aria-label="AIによる変化">
+      <div class="section-head">
+        <h2>AIは、配置先である組織構造そのものを変える。</h2>
+        <p>AIで時間を削減できるかだけでなく、生まれた人的リソースをどこへ再投資するかが重要になります。</p>
+      </div>
+      <div class="compare-grid">
+        <article class="compare-card light">
+          <div><span class="pill">Before</span><h3>固定された組織へ割り当てる。</h3><p>既存部署と必要人数を前提に、誰をどこへ置くかを考えます。</p></div>
+          <div class="list">
+            <div class="item">部署ごとの枠が先にある</div>
+            <div class="item">職務名で候補を絞りやすい</div>
+            <div class="item">局所マッチングに見えやすい</div>
+          </div>
+        </article>
+        <div class="center-arrow" aria-hidden="true"></div>
+        <article class="compare-card dark">
+          <div><span class="pill">After</span><h3>変化する組織へ再配置する。</h3><p>AIで業務プロセス、タスク比重、必要スキルが変わる前提で考えます。</p></div>
+          <div class="list">
+            <div class="item">AI戦略に応じて組織構造を見直す</div>
+            <div class="item">タスクとスキルで人材要件を再定義する</div>
+            <div class="item">人的リソースを成長領域へ再投資する</div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="task-section" aria-label="タスク単位でAI影響を見る">
+      <div class="section-head">
+        <h2>AI影響は、職務名ではなくタスクに出る。</h2>
+        <p>同じ営業職でも、顧客リスト作成、提案資料作成、商談、契約交渉、社内調整ではAIの影響度が違います。</p>
+      </div>
+      <article class="task-card">
+        <span class="pill">Task-based View</span>
+        <h3>「営業職」をタスクへ分解する。</h3>
+        <div class="task-map">
+          <div class="task-row"><div class="task-cell">顧客リスト作成</div><div class="task-cell impact">AI影響: 高</div><div class="task-cell">調査力・仮説構築</div></div>
+          <div class="task-row"><div class="task-cell">提案資料作成</div><div class="task-cell impact">AI影響: 中〜高</div><div class="task-cell">構成力・顧客理解</div></div>
+          <div class="task-row"><div class="task-cell">商談</div><div class="task-cell impact">AI影響: 中</div><div class="task-cell">対話力・課題発見</div></div>
+          <div class="task-row"><div class="task-cell">契約交渉</div><div class="task-cell impact">AI影響: 低〜中</div><div class="task-cell">論点整理・リスク判断</div></div>
+          <div class="task-row"><div class="task-cell">社内調整</div><div class="task-cell impact">AI影響: 低〜中</div><div class="task-cell">合意形成・推進力</div></div>
+        </div>
+        <div class="source-band">
+          <div class="source-card">Anthropicの「<a href="https://www.anthropic.com/research/labor-market-impacts">Labor market impacts of AI</a>」は、職業ではなくタスク単位でAI exposureを見る発想を示しています。</div>
+          <div class="source-card">「<a href="https://weblab.t.u-tokyo.ac.jp/news/2026-06-04-3/">Japan AI Index</a>」は、日本固有の産業構造・雇用慣行を踏まえてAI影響を捉える参照軸です。</div>
+        </div>
+      </article>
+    </section>
+
+    <section class="skill-section" aria-label="スキルを媒介にする">
+      <div class="section-head">
+        <h2>スキルが、人とタスクをつなぐ。</h2>
+        <p>職務名だけでは見えなかった配置可能性を、タスクが要求するスキルと社員が持つスキルの照合で見つけます。</p>
+      </div>
+      <div class="skill-layout">
+        <article class="skill-card">
+          <span class="pill">Task</span>
+          <h3>タスクが要求するスキル。</h3>
+          <p>情報収集、提案設計、顧客理解、合意形成、責任ある判断。</p>
+          <div class="chips"><span class="chip">required skills</span><span class="chip">task mix</span></div>
+        </article>
+        <div class="skill-core">
+          <div>
+            <span class="pill">Skill Matching</span>
+            <strong>共通言語として<br>照合する。</strong>
+            <span>タスクと社員を直接つなぐのではなく、スキルを媒介にして配置可能性を見る。</span>
+          </div>
+        </div>
+        <article class="skill-card">
+          <span class="pill">Employee</span>
+          <h3>社員が持つスキル。</h3>
+          <p>現在の職務名を越えて、経験・強み・希望・制約を構造化します。</p>
+          <div class="chips"><span class="chip">owned skills</span><span class="chip">experience</span><span class="chip">constraints</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="pipeline-section" aria-label="AI戦略から配置まで">
+      <div class="section-head">
+        <h2>分断された情報を、ひとつの構造として扱う。</h2>
+        <p>AI影響度だけでは配置は決まりません。AI戦略から、組織構造、人材要件、社員データ、配置シナリオまでをつなぎます。</p>
+      </div>
+      <div class="pipeline">
+        <article class="pipeline-card"><span class="pill">01</span><div><h3>AI戦略</h3><p>どの業務を効率化し、どの領域へ人的リソースを再投資するかを決める。</p></div></article>
+        <div class="down" aria-hidden="true"></div>
+        <article class="pipeline-card"><span class="pill">02</span><div><h3>組織構造</h3><p>AI前提で部署・役割・業務プロセスを再設計する。</p></div></article>
+        <div class="down" aria-hidden="true"></div>
+        <article class="pipeline-card"><span class="pill">03</span><div><h3>人材要件</h3><p>問いの設計、AI評価、顧客理解、合意形成、意思決定などを定義する。</p></div></article>
+        <div class="down" aria-hidden="true"></div>
+        <article class="pipeline-card"><span class="pill">04</span><div><h3>社員データ</h3><p>スキル、経験、希望、等級、勤務地、異動制約をつなげて見る。</p></div></article>
+        <div class="down" aria-hidden="true"></div>
+        <article class="pipeline-card"><span class="pill">05</span><div><h3>配置シナリオ</h3><p>複数案を比較し、制約充足、リスク、育成効果を見える化する。</p></div></article>
+      </div>
+    </section>
+
+    <section class="conclusion-section" aria-label="結論">
+      <article class="conclusion">
+        <span class="pill">Conclusion</span>
+        <h2>目指すのは、人事判断の自動化ではない。</h2>
+        <p>判断材料を整理し、複数シナリオを比較し、人事と経営が「誰を、どこで、どう活かすか」を決めやすくすること。AI時代に必要なのは、人を減らす配置ではなく、人を活かす配置設計です。</p>
+      </article>
+    </section>
+
+    <footer class="footer site-chrome-footer">
+      <p>Algomatic Tech Blog の記事を zukai-creator で再構成した非公式図解です。</p>
+      <p>© 図解構成: Go (@53able) · Designed with Apple-style tokens</p>
+    </footer>
+  </main>
+</body>
+</html>

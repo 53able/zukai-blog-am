@@ -1,0 +1,549 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DeepSWEは何を測るのか</title>
+  <style>
+    :root {
+      --primary: #0066cc;
+      --primary-dark: #2997ff;
+      --ink: #1d1d1f;
+      --ink-muted: #333333;
+      --muted: #7a7a7a;
+      --hairline: #e0e0e0;
+      --divider: #f0f0f0;
+      --canvas: #ffffff;
+      --parchment: #f5f5f7;
+      --pearl: #fafafc;
+      --dark-1: #272729;
+      --dark-2: #2a2a2c;
+      --dark-3: #252527;
+      --white: #ffffff;
+      --radius-lg: 18px;
+      --radius-pill: 9999px;
+      --font-display: "SF Pro Display", system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+      --font-text: "SF Pro Text", system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: var(--font-text);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+    }
+
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .hero {
+      min-height: 42vh;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 80px 24px 64px;
+      background: var(--canvas);
+    }
+
+    .hero-inner { max-width: 980px; }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--primary);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+      margin-bottom: 18px;
+    }
+
+    .kicker-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+
+    h1 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(40px, 5vw, 64px);
+      font-weight: 600;
+      line-height: 1.07;
+      letter-spacing: -0.28px;
+    }
+
+    .lead {
+      max-width: 840px;
+      margin: 24px auto 0;
+      font-family: var(--font-display);
+      font-size: clamp(21px, 2.4vw, 28px);
+      font-weight: 400;
+      line-height: 1.25;
+      letter-spacing: 0.196px;
+      color: var(--ink-muted);
+    }
+
+    .source-note {
+      margin-top: 28px;
+      font-size: 14px;
+      line-height: 1.43;
+      letter-spacing: -0.224px;
+      color: var(--muted);
+    }
+
+    .overview {
+      background: var(--parchment);
+      padding: 80px 24px;
+    }
+
+    .overview-grid {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 0.9fr 1.35fr;
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .center-tile {
+      background: var(--dark-1);
+      color: var(--white);
+      border-radius: var(--radius-lg);
+      padding: clamp(34px, 5vw, 64px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 580px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-self: flex-start;
+      padding: 8px 15px;
+      border-radius: var(--radius-pill);
+      background: var(--primary);
+      color: var(--white);
+      font-size: 14px;
+      line-height: 1.29;
+      letter-spacing: -0.224px;
+    }
+
+    h2 {
+      margin: 28px 0 14px;
+      font-family: var(--font-display);
+      font-size: clamp(34px, 3vw, 44px);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.28px;
+    }
+
+    .tile-copy {
+      max-width: 470px;
+      font-size: 17px;
+      font-weight: 400;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+      color: #cccccc;
+    }
+
+    .metric-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 34px;
+    }
+
+    .metric {
+      padding: 14px 16px;
+      border-radius: 11px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--white);
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .metric strong {
+      font-family: var(--font-display);
+      font-size: 28px;
+      line-height: 1.1;
+      font-weight: 600;
+      letter-spacing: -0.28px;
+    }
+
+    .metric span {
+      font-size: 14px;
+      line-height: 1.43;
+      color: #cccccc;
+      letter-spacing: -0.224px;
+      text-align: right;
+    }
+
+    .pillar-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .pillar {
+      background: var(--canvas);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      min-height: 174px;
+    }
+
+    .pillar-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 12px;
+    }
+
+    .pillar-num {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: var(--white);
+      background: var(--primary);
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    .pillar h3 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(24px, 2vw, 32px);
+      font-weight: 600;
+      line-height: 1.14;
+      letter-spacing: -0.28px;
+    }
+
+    .pillar p {
+      margin: 0;
+      color: var(--ink-muted);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .chip {
+      padding: 7px 11px;
+      border-radius: var(--radius-pill);
+      background: var(--pearl);
+      border: 1px solid var(--divider);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1;
+      letter-spacing: -0.12px;
+    }
+
+    .flow-section {
+      background: var(--canvas);
+      padding: 86px 24px 92px;
+    }
+
+    .flow-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .flow-inner > p {
+      max-width: 780px;
+      margin: 16px auto 0;
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+      color: var(--ink-muted);
+    }
+
+    .flow {
+      margin-top: 44px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .step {
+      position: relative;
+      background: var(--parchment);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-lg);
+      padding: 24px 18px;
+      min-height: 170px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: left;
+    }
+
+    .step:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      right: -13px;
+      top: 50%;
+      width: 13px;
+      height: 1px;
+      background: var(--primary);
+      z-index: 2;
+    }
+
+    .step small {
+      color: var(--primary);
+      font-size: 12px;
+      line-height: 1;
+      letter-spacing: -0.12px;
+      margin-bottom: 10px;
+    }
+
+    .step strong {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 21px;
+      font-weight: 600;
+      line-height: 1.19;
+      letter-spacing: 0.231px;
+      color: var(--ink);
+    }
+
+    .step span {
+      display: block;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.43;
+      letter-spacing: -0.224px;
+    }
+
+    .examples {
+      background: var(--dark-2);
+      color: var(--white);
+      padding: 90px 24px 96px;
+    }
+
+    .examples-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    .examples-head {
+      text-align: center;
+      max-width: 860px;
+      margin: 0 auto 42px;
+    }
+
+    .examples-head .lead { color: #cccccc; }
+
+    .example-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .example-card {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: var(--radius-lg);
+      padding: 34px;
+      min-height: 310px;
+    }
+
+    .example-card .tag {
+      display: inline-flex;
+      padding: 8px 14px;
+      border-radius: var(--radius-pill);
+      color: var(--primary-dark);
+      background: rgba(41,151,255,0.13);
+      border: 1px solid rgba(41,151,255,0.22);
+      font-size: 14px;
+      line-height: 1.29;
+      letter-spacing: -0.224px;
+      margin-bottom: 20px;
+    }
+
+    .example-card h3 {
+      margin: 0 0 16px;
+      font-family: var(--font-display);
+      font-size: clamp(28px, 2.4vw, 38px);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.28px;
+    }
+
+    .example-card p {
+      margin: 0;
+      color: #cccccc;
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+    }
+
+    .caution {
+      margin-top: 32px;
+      padding: 24px 28px;
+      border-radius: var(--radius-lg);
+      background: var(--canvas);
+      color: var(--ink-muted);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+    }
+
+    .caution strong { color: var(--ink); }
+
+    .footer {
+      background: var(--parchment);
+      padding: 38px 24px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+      letter-spacing: -0.12px;
+      text-align: center;
+    }
+
+    @media (max-width: 980px) {
+      .overview-grid { grid-template-columns: 1fr; }
+      .center-tile { min-height: auto; }
+      .flow { grid-template-columns: 1fr; }
+      .step:not(:last-child)::after {
+        right: auto;
+        left: 50%;
+        top: auto;
+        bottom: -13px;
+        width: 1px;
+        height: 13px;
+      }
+      .example-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+  <meta name="zukai:published" content="2026-06-02" />
+  <link rel="stylesheet" href="../assets/site-chrome.css" />
+</head>
+<body>
+  <nav class="site-chrome-nav" aria-label="サイト">
+    <div class="site-chrome-nav-inner">
+      <a href="../index.html">← 図解ギャラリー</a>
+      <a href="https://tech.algomatic.jp/entry/advent-calendar/2026-06/deepswe">元記事を読む</a>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero" aria-labelledby="title">
+      <div class="hero-inner">
+        <div class="kicker"><span class="kicker-dot"></span>図解構成 / DeepSWE Benchmark</div>
+        <h1 id="title">DeepSWEは、<br>何を測るのか。</h1>
+        <p class="lead">短い指示からコードベースを探索し、長い実装を完遂し、振る舞いで検証する力を測ろうとするベンチマークです。</p>
+        <p class="source-note">Source: Algomatic Tech Blog「<a href="https://tech.algomatic.jp/entry/advent-calendar/2026-06/deepswe">DeepSWEについての記事</a>」と DeepSWE 公式 <a href="https://deepswe.datacurve.ai/blog">Blog</a> / <a href="https://deepswe.datacurve.ai/data">Data</a> をもとに再構成。</p>
+      </div>
+    </section>
+
+    <section class="overview" aria-label="DeepSWEの3本柱">
+      <div class="overview-grid">
+        <article class="center-tile">
+          <div>
+            <span class="pill">Benchmark</span>
+            <h2>記憶力ではなく、<br>解決力を見る。</h2>
+            <p class="tile-copy">DeepSWE は既存PRの再現ではなく、新規に作られた長い実装課題で、コーディングエージェントの実務寄りの能力を比較します。</p>
+          </div>
+          <div class="metric-list" aria-label="DeepSWEの規模">
+            <div class="metric"><strong>113</strong><span>original tasks</span></div>
+            <div class="metric"><strong>91</strong><span>open-source repositories</span></div>
+            <div class="metric"><strong>5</strong><span>languages</span></div>
+          </div>
+        </article>
+
+        <div class="pillar-grid">
+          <article class="pillar">
+            <div class="pillar-head">
+              <h3>タスクの妥当性</h3>
+              <span class="pillar-num">1</span>
+            </div>
+            <p>開発者がエージェントへ依頼するような短い自然文を使い、実装箇所や手順はエージェント自身に探索させます。</p>
+            <div class="chips"><span class="chip">short prompts</span><span class="chip">long-horizon</span><span class="chip">multi-language</span></div>
+          </article>
+
+          <article class="pillar">
+            <div class="pillar-head">
+              <h3>評価の妥当性</h3>
+              <span class="pillar-num">2</span>
+            </div>
+            <p>タスクは新規作成され、mini-swe-agent で実行条件を揃え、検証器は実装形ではなく観測可能な振る舞いを見ます。</p>
+            <div class="chips"><span class="chip">contamination free</span><span class="chip">fixed harness</span><span class="chip">behavior verifier</span></div>
+          </article>
+
+          <article class="pillar">
+            <div class="pillar-head">
+              <h3>透明性</h3>
+              <span class="pillar-num">3</span>
+            </div>
+            <p>リーダーボード、ヒートマップ、タスク詳細、試行ログが公開され、モデルごとの得意不得意を追跡できます。</p>
+            <div class="chips"><span class="chip">leaderboard</span><span class="chip">heatmap</span><span class="chip">tasks & trials</span></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="flow-section" aria-label="評価パイプライン">
+      <div class="flow-inner">
+        <h2>評価は、足場を揃えてから行う。</h2>
+        <p>モデルの性能差を見るために、タスクの作成、レビュー、実行、採点、公開までの流れを固定します。</p>
+        <div class="flow">
+          <div class="step"><small>01</small><strong>新規タスク作成</strong><span>既存コミットや公開PRの答えを使わない。</span></div>
+          <div class="step"><small>02</small><strong>人間レビュー</strong><span>プロンプト、検証器、参照実装を確認する。</span></div>
+          <div class="step"><small>03</small><strong>mini-swe-agent</strong><span>各モデルに同じ bash ツールと共通プロンプトを渡す。</span></div>
+          <div class="step"><small>04</small><strong>Verifier</strong><span>公開APIや出力など、外から見える振る舞いを採点する。</span></div>
+          <div class="step"><small>05</small><strong>公開データ</strong><span>スコア、コスト、時間、軌跡を確認できる。</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="examples" aria-label="タスク例と限界">
+      <div class="examples-inner">
+        <div class="examples-head">
+          <h2>タスク例は、単発の修正ではなく設計を含む。</h2>
+          <p class="lead">記事では、CSS lexer と JSON Schema parser の2例から、正確な実装力と構成力の違いを見ています。</p>
+        </div>
+
+        <div class="example-grid">
+          <article class="example-card">
+            <span class="tag">precision</span>
+            <h3>CSS shorthand を展開・圧縮する</h3>
+            <p>background の複数レイヤー、longhand への分配、最終レイヤーだけに適用される background-color など、細かい仕様を正確に扱う必要があります。</p>
+          </article>
+          <article class="example-card">
+            <span class="tag">architecture</span>
+            <h3>JSON Schema の $ref と依存関係を扱う</h3>
+            <p>既存パーサーの暗黙 object schema、再帰参照、anyOf 合成などを踏まえて、局所修正だけでなく全体の構成を整える必要があります。</p>
+          </article>
+        </div>
+
+        <div class="caution"><strong>注意:</strong> DeepSWE も完全な評価ではありません。公式ブログは、Java/C++未対応、OSS中心、mini-swe-agent固定、bug localization や refactoring の不足などを限界として挙げています。図では「信頼できる絶対評価」ではなく、「比較の解像度を上げる仕組み」として扱います。</div>
+      </div>
+    </section>
+
+    <footer class="footer site-chrome-footer">
+      <p>Algomatic Tech Blog の記事を zukai-creator で再構成した非公式図解です。</p>
+      <p>© 図解構成: Go (@53able) · Designed with Apple-style tokens</p>
+    </footer>
+  </main>
+</body>
+</html>

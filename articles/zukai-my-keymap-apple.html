@@ -1,0 +1,704 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>指の仕事を、身体に合わせて配り直す</title>
+  <style>
+    :root {
+      --primary: #0066cc;
+      --primary-dark: #2997ff;
+      --ink: #1d1d1f;
+      --ink-muted: #333333;
+      --muted: #7a7a7a;
+      --hairline: #e0e0e0;
+      --divider: #f0f0f0;
+      --canvas: #ffffff;
+      --parchment: #f5f5f7;
+      --dark-1: #272729;
+      --dark-2: #2a2a2c;
+      --white: #ffffff;
+      --radius-lg: 18px;
+      --radius-pill: 9999px;
+      --font-display: "SF Pro Display", system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+      --font-text: "SF Pro Text", system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: var(--font-text);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+    }
+
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .hero {
+      min-height: 42vh;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 80px 24px 64px;
+      background: var(--canvas);
+    }
+
+    .hero-inner { max-width: 980px; }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--primary);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+      margin-bottom: 18px;
+    }
+
+    .kicker-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+
+    h1 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(40px, 5vw, 64px);
+      font-weight: 600;
+      line-height: 1.07;
+      letter-spacing: -0.28px;
+    }
+
+    .lead {
+      max-width: 860px;
+      margin: 24px auto 0;
+      font-family: var(--font-display);
+      font-size: clamp(21px, 2.4vw, 28px);
+      font-weight: 400;
+      line-height: 1.25;
+      letter-spacing: 0.196px;
+      color: var(--ink-muted);
+    }
+
+    .source-note {
+      margin-top: 28px;
+      font-size: 14px;
+      line-height: 1.43;
+      letter-spacing: -0.224px;
+      color: var(--muted);
+    }
+
+    .section-head {
+      max-width: 940px;
+      margin: 0 auto 44px;
+      text-align: center;
+    }
+
+    h2 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(34px, 3vw, 44px);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.28px;
+    }
+
+    .section-head p {
+      max-width: 820px;
+      margin: 16px auto 0;
+      color: var(--ink-muted);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+    }
+
+    .problem-section {
+      background: var(--parchment);
+      padding: 80px 24px 88px;
+    }
+
+    .problem-grid {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .problem-card {
+      min-height: 310px;
+      border-radius: var(--radius-lg);
+      background: var(--canvas);
+      border: 1px solid var(--hairline);
+      padding: 34px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .body-dot {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: var(--white);
+      display: grid;
+      place-items: center;
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+    }
+
+    .body-dot.gray {
+      background: #d2d2d7;
+      color: var(--ink);
+    }
+
+    .problem-card h3,
+    .mapping-card h3,
+    .layer-card h3,
+    .route-card h3 {
+      margin: 24px 0 12px;
+      font-family: var(--font-display);
+      font-size: clamp(28px, 2.4vw, 36px);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.28px;
+    }
+
+    .problem-card p,
+    .mapping-card p,
+    .layer-card p,
+    .route-card p {
+      margin: 0;
+      color: var(--ink-muted);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 22px;
+    }
+
+    .chip {
+      display: inline-flex;
+      padding: 8px 12px;
+      border-radius: var(--radius-pill);
+      background: var(--parchment);
+      border: 1px solid var(--divider);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1;
+      letter-spacing: -0.12px;
+    }
+
+    .principle-section {
+      background: var(--dark-2);
+      color: var(--white);
+      padding: 88px 24px 94px;
+      text-align: center;
+    }
+
+    .principle-section .section-head p { color: #cccccc; }
+
+    .principle-box {
+      max-width: 980px;
+      margin: 0 auto;
+      border-radius: var(--radius-lg);
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      padding: clamp(36px, 5vw, 60px);
+    }
+
+    .pill {
+      display: inline-flex;
+      padding: 8px 15px;
+      border-radius: var(--radius-pill);
+      background: var(--primary);
+      color: var(--white);
+      font-size: 14px;
+      line-height: 1.29;
+      letter-spacing: -0.224px;
+    }
+
+    .principle-box .pill {
+      color: var(--primary-dark);
+      background: rgba(41,151,255,0.13);
+      border: 1px solid rgba(41,151,255,0.22);
+    }
+
+    .principle-title {
+      margin: 26px auto 0;
+      max-width: 820px;
+      font-family: var(--font-display);
+      font-size: clamp(36px, 4vw, 56px);
+      font-weight: 600;
+      line-height: 1.08;
+      letter-spacing: -0.28px;
+    }
+
+    .redistribution {
+      max-width: 980px;
+      margin: 30px auto 0;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .redistribution div {
+      background: var(--canvas);
+      color: var(--ink);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      min-height: 130px;
+    }
+
+    .redistribution strong {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 24px;
+      line-height: 1.16;
+      letter-spacing: 0.216px;
+      margin-bottom: 8px;
+    }
+
+    .redistribution span {
+      color: var(--ink-muted);
+      font-size: 14px;
+      line-height: 1.43;
+      letter-spacing: -0.224px;
+    }
+
+    .layers-section {
+      background: var(--canvas);
+      padding: 86px 24px 92px;
+    }
+
+    .layer-grid {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 86px 1fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .layer-card {
+      border-radius: var(--radius-lg);
+      padding: clamp(32px, 4vw, 48px);
+      min-height: 520px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .layer-card.light {
+      background: var(--parchment);
+      border: 1px solid var(--hairline);
+    }
+
+    .layer-card.dark {
+      background: var(--dark-1);
+      color: var(--white);
+    }
+
+    .layer-card.dark p { color: #cccccc; }
+    .layer-card.dark .pill {
+      color: var(--primary-dark);
+      background: rgba(41,151,255,0.13);
+      border: 1px solid rgba(41,151,255,0.22);
+    }
+
+    .list {
+      display: grid;
+      gap: 10px;
+      margin-top: 30px;
+    }
+
+    .item {
+      padding: 14px 16px;
+      border-radius: 11px;
+      background: var(--canvas);
+      border: 1px solid var(--divider);
+      color: var(--ink-muted);
+      font-size: 14px;
+      line-height: 1.43;
+      letter-spacing: -0.224px;
+    }
+
+    .dark .item {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.14);
+      color: #cccccc;
+    }
+
+    .center-label {
+      align-self: center;
+      display: grid;
+      justify-items: center;
+      gap: 12px;
+      color: var(--primary);
+      text-align: center;
+      font-size: 14px;
+      line-height: 1.43;
+      letter-spacing: -0.224px;
+    }
+
+    .center-line {
+      width: 1px;
+      height: 360px;
+      background: var(--primary);
+      position: relative;
+    }
+
+    .center-line::before,
+    .center-line::after {
+      content: "";
+      position: absolute;
+      left: -5px;
+      width: 11px;
+      height: 11px;
+      border-top: 1px solid var(--primary);
+      border-right: 1px solid var(--primary);
+    }
+
+    .center-line::before { top: 0; transform: rotate(-45deg); }
+    .center-line::after { bottom: 0; transform: rotate(135deg); }
+
+    .mapping-section {
+      background: var(--parchment);
+      padding: 86px 24px 92px;
+    }
+
+    .mapping-grid {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .mapping-card {
+      background: var(--canvas);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      min-height: 330px;
+    }
+
+    .fromto {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-top: 20px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 14px;
+      line-height: 1.4;
+      color: var(--ink-muted);
+    }
+
+    .key {
+      padding: 12px 14px;
+      border-radius: 11px;
+      background: var(--parchment);
+      border: 1px solid var(--divider);
+    }
+
+    .arrow {
+      color: var(--primary);
+      text-align: center;
+      font-family: var(--font-display);
+      font-size: 20px;
+    }
+
+    .route-section {
+      background: var(--dark-2);
+      color: var(--white);
+      padding: 90px 24px 96px;
+    }
+
+    .route-section .section-head p { color: #cccccc; }
+
+    .route-card {
+      max-width: 1060px;
+      margin: 0 auto;
+      border-radius: var(--radius-lg);
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      padding: clamp(32px, 4vw, 48px);
+    }
+
+    .route-card p { color: #cccccc; }
+    .route-card .pill {
+      color: var(--primary-dark);
+      background: rgba(41,151,255,0.13);
+      border: 1px solid rgba(41,151,255,0.22);
+    }
+
+    .steps {
+      margin-top: 30px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .step {
+      min-height: 112px;
+      padding: 18px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      color: var(--white);
+      font-size: 14px;
+      line-height: 1.43;
+      letter-spacing: -0.224px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .step-arrow {
+      color: var(--primary-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+
+    .conclusion-section {
+      background: var(--parchment);
+      padding: 86px 24px 92px;
+    }
+
+    .conclusion {
+      max-width: 920px;
+      margin: 0 auto;
+      background: var(--canvas);
+      border: 1px solid var(--hairline);
+      color: var(--ink);
+      border-radius: var(--radius-lg);
+      padding: clamp(34px, 5vw, 58px);
+      text-align: center;
+    }
+
+    .conclusion h2 { margin-top: 28px; }
+
+    .conclusion p {
+      margin: 18px auto 0;
+      max-width: 760px;
+      color: var(--ink-muted);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+    }
+
+    .footer {
+      background: var(--parchment);
+      padding: 38px 24px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+      letter-spacing: -0.12px;
+      text-align: center;
+    }
+
+    @media (max-width: 980px) {
+      .problem-grid, .redistribution, .mapping-grid { grid-template-columns: 1fr; }
+      .layer-grid { grid-template-columns: 1fr; }
+      .center-label { order: -1; }
+      .center-line { width: 100%; height: 1px; }
+      .center-line::before { left: 0; top: -5px; transform: rotate(-135deg); }
+      .center-line::after { left: auto; right: 0; bottom: auto; top: -5px; transform: rotate(45deg); }
+      .steps { grid-template-columns: 1fr; }
+      .step-arrow { transform: rotate(90deg); }
+    }
+  </style>
+  <meta name="zukai:published" content="2026-06-10" />
+  <link rel="stylesheet" href="../assets/site-chrome.css" />
+</head>
+<body>
+  <nav class="site-chrome-nav" aria-label="サイト">
+    <div class="site-chrome-nav-inner">
+      <a href="../index.html">← 図解ギャラリー</a>
+      <a href="https://tech.algomatic.jp/entry/advent-calendar/2026-06/my-keymap">元記事を読む</a>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero" aria-labelledby="title">
+      <div class="hero-inner">
+        <div class="kicker"><span class="kicker-dot"></span>図解構成 / Personal Keymap Design</div>
+        <h1 id="title">指の仕事を、<br>身体に合わせて配り直す。</h1>
+        <p class="lead">小指に集まりすぎた負担を親指へ。遠い数字と矢印を f / j の触覚基準へ。</p>
+        <p class="source-note">Source: Algomatic Tech Blog「<a href="https://tech.algomatic.jp/entry/advent-calendar/2026-06/my-keymap">こだわりキーマップ</a>」をもとに再構成。</p>
+      </div>
+    </section>
+
+    <section class="problem-section" aria-label="標準配列の問題">
+      <div class="section-head">
+        <h2>標準配列は、指の仕事量が不公平。</h2>
+        <p>毎日何時間も触る道具だから、少しの負担も年単位で蓄積します。出発点は「どの指に、どの仕事を任せるべきか」です。</p>
+      </div>
+      <div class="problem-grid">
+        <article class="problem-card">
+          <div>
+            <div class="body-dot gray">小</div>
+            <h3>小指が忙しい。</h3>
+            <p>Shift、Ctrl、Enter、BS。押しっぱなしや遠いキーで負担が集中します。</p>
+          </div>
+          <div class="chips"><span class="chip">Shift</span><span class="chip">Ctrl</span><span class="chip">Enter</span><span class="chip">Backspace</span></div>
+        </article>
+        <article class="problem-card">
+          <div>
+            <div class="body-dot">親</div>
+            <h3>親指が暇。</h3>
+            <p>器用で力もあるのに、かな / 英数の切り替えくらいしか担当していません。</p>
+          </div>
+          <div class="chips"><span class="chip">かな</span><span class="chip">英数</span><span class="chip">Space</span></div>
+        </article>
+        <article class="problem-card">
+          <div>
+            <div class="body-dot gray">f/j</div>
+            <h3>数字と矢印が遠い。</h3>
+            <p>ホームポジションから離れるため、視線が落ち、ブラインドタッチしにくくなります。</p>
+          </div>
+          <div class="chips"><span class="chip">number row</span><span class="chip">arrow keys</span><span class="chip">PgUp / PgDn</span></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="principle-section" aria-label="設計思想">
+      <div class="principle-box">
+        <span class="pill">Design Principle</span>
+        <div class="principle-title">器用な指に仕事を寄せ、<br>不器用な指から仕事を奪う。</div>
+      </div>
+      <div class="redistribution">
+        <div><strong>親指</strong><span>高頻度キーを担当。BSとShiftを近くへ。</span></div>
+        <div><strong>小指</strong><span>同時押しから解放。押しっぱなしの痛みを減らす。</span></div>
+        <div><strong>f / j</strong><span>突起を触覚の支点に。数字と矢印を手元へ。</span></div>
+      </div>
+    </section>
+
+    <section class="layers-section" aria-label="二層構成">
+      <div class="section-head">
+        <h2>二層構成で、身体に合わせる。</h2>
+        <p>macOS側のKarabinerでベースを組み替え、HHKB Hybrid本体のFnレイヤーで第二レイヤーを作ります。</p>
+      </div>
+      <div class="layer-grid">
+        <article class="layer-card light">
+          <div>
+            <span class="pill">Karabiner-Elements</span>
+            <h3>macOS側のベースレイヤー。</h3>
+            <p>通常時のキー配置を、親指中心に再配置します。IME切り替えの穴もComplex Modificationsで補います。</p>
+          </div>
+          <div class="list">
+            <div class="item">かな → Backspace</div>
+            <div class="item">英数 → IMEトグル</div>
+            <div class="item">右 Command → 右 Shift</div>
+            <div class="item">左 Command ↔ 左 Control</div>
+          </div>
+        </article>
+
+        <div class="center-label">
+          <div>Layered<br>keymap</div>
+          <div class="center-line" aria-hidden="true"></div>
+          <div>base + fn</div>
+        </div>
+
+        <article class="layer-card dark">
+          <div>
+            <span class="pill">HHKB Hybrid</span>
+            <h3>本体側のFnレイヤー。</h3>
+            <p>Fnを押している間だけ、遠い数字・矢印・記号をホームポジション周辺へ下ろします。</p>
+          </div>
+          <div class="list">
+            <div class="item">数字 → 左手 f 付近</div>
+            <div class="item">矢印 → 右手 j / IJKL 付近</div>
+            <div class="item">PgUp / PgDn / Home → 同レイヤー</div>
+            <div class="item">各種記号 → 手元で完結</div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="mapping-section" aria-label="主要マッピング">
+      <div class="section-head">
+        <h2>キーの置換ではなく、狙いの置換。</h2>
+        <p>重要なのは「どのキーをどこへ動かしたか」より、「どの負担をどの指に移したか」です。</p>
+      </div>
+      <div class="mapping-grid">
+        <article class="mapping-card">
+          <span class="pill">Backspace</span>
+          <h3>訂正を親指へ。</h3>
+          <p>高頻度なBSを、遠い右上から右親指の近くへ移します。</p>
+          <div class="fromto"><div class="key">かな</div><div class="arrow">↓</div><div class="key">Backspace</div></div>
+        </article>
+        <article class="mapping-card">
+          <span class="pill">Shift</span>
+          <h3>押しっぱなしを救う。</h3>
+          <p>小指の同時押し負担を、押しやすい右親指へ逃がします。</p>
+          <div class="fromto"><div class="key">右 Command</div><div class="arrow">↓</div><div class="key">右 Shift</div></div>
+        </article>
+        <article class="mapping-card">
+          <span class="pill">IME</span>
+          <h3>切替を1キーへ。</h3>
+          <p>かなキーをBSに渡した分、英数キーをIMEトグルに集約します。</p>
+          <div class="fromto"><div class="key">英数</div><div class="arrow">↓</div><div class="key">IME toggle</div></div>
+        </article>
+        <article class="mapping-card">
+          <span class="pill">Fn Layer</span>
+          <h3>遠いキーを手元へ。</h3>
+          <p>f / j の突起を支点に、数字と矢印をブラインドタッチ可能にします。</p>
+          <div class="fromto"><div class="key">Fn + f/j 周辺</div><div class="arrow">↓</div><div class="key">数字・矢印</div></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="route-section" aria-label="Fn Globe 迂回路">
+      <div class="section-head">
+        <h2>HHKBのFnを、MacのFn / Globeへ届ける。</h2>
+        <p>HHKBのFnは本体内部で完結するため、そのままではmacOSに届きません。Caps Lockを中継キーにして迂回します。</p>
+      </div>
+      <article class="route-card">
+        <span class="pill">Advanced Route</span>
+        <h3>デバイス別設定で、HHKBだけを変換する。</h3>
+        <p>MacBook本体キーボードには影響させず、HHKBから来たCaps LockだけをKarabinerでFn / Globeに変換します。</p>
+        <div class="steps">
+          <div class="step">HHKB<br>右 Fn</div>
+          <div class="step-arrow">→</div>
+          <div class="step">Caps Lock<br>として送出</div>
+          <div class="step-arrow">→</div>
+          <div class="step">Karabiner<br>HHKB限定でFnへ</div>
+        </div>
+      </article>
+    </section>
+
+    <section class="conclusion-section" aria-label="結論">
+      <article class="conclusion">
+        <span class="pill">Conclusion</span>
+        <h2>キーマップは、身体に合わせて設計できる。</h2>
+        <p>小指に偏った負担を親指へ移し、f / j を支点に数字と矢印を手元へ下ろす。ほんの数キーの再配置でも、毎日の負担と速度は変わります。</p>
+      </article>
+    </section>
+
+    <footer class="footer site-chrome-footer">
+      <p>Algomatic Tech Blog の記事を zukai-creator で再構成した非公式図解です。</p>
+      <p>© 図解構成: Go (@53able) · Designed with Apple-style tokens</p>
+    </footer>
+  </main>
+</body>
+</html>

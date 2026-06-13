@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>注意力に依存しないコードベース</title>
+  <style>
+    :root {
+      --primary: #0066cc;
+      --primary-dark: #2997ff;
+      --ink: #1d1d1f;
+      --ink-muted: #333333;
+      --muted: #7a7a7a;
+      --hairline: #e0e0e0;
+      --divider: #f0f0f0;
+      --canvas: #ffffff;
+      --parchment: #f5f5f7;
+      --pearl: #fafafc;
+      --dark-1: #272729;
+      --dark-2: #2a2a2c;
+      --white: #ffffff;
+      --radius-lg: 18px;
+      --radius-pill: 9999px;
+      --font-display: "SF Pro Display", system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+      --font-text: "SF Pro Text", system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: var(--font-text);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+    }
+
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .hero {
+      min-height: 42vh;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 80px 24px 64px;
+      background: var(--canvas);
+    }
+
+    .hero-inner { max-width: 980px; }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--primary);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+      margin-bottom: 18px;
+    }
+
+    .kicker-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+
+    h1 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(40px, 5vw, 64px);
+      font-weight: 600;
+      line-height: 1.07;
+      letter-spacing: -0.28px;
+    }
+
+    .lead {
+      max-width: 860px;
+      margin: 24px auto 0;
+      font-family: var(--font-display);
+      font-size: clamp(21px, 2.4vw, 28px);
+      font-weight: 400;
+      line-height: 1.25;
+      letter-spacing: 0.196px;
+      color: var(--ink-muted);
+    }
+
+    .source-note {
+      margin-top: 28px;
+      font-size: 14px;
+      line-height: 1.43;
+      letter-spacing: -0.224px;
+      color: var(--muted);
+    }
+
+    .section-head {
+      max-width: 940px;
+      margin: 0 auto 44px;
+      text-align: center;
+    }
+
+    h2 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(34px, 3vw, 44px);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.28px;
+    }
+
+    .section-head p {
+      max-width: 800px;
+      margin: 16px auto 0;
+      color: var(--ink-muted);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+    }
+
+    .problem-section {
+      background: var(--parchment);
+      padding: 80px 24px 88px;
+    }
+
+    .problem-grid {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 82px 1fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .card {
+      border-radius: var(--radius-lg);
+      padding: clamp(30px, 4vw, 50px);
+      min-height: 420px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .card.light {
+      background: var(--canvas);
+      border: 1px solid var(--hairline);
+      color: var(--ink);
+    }
+
+    .card.dark {
+      background: var(--dark-1);
+      color: var(--white);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-self: flex-start;
+      padding: 8px 15px;
+      border-radius: var(--radius-pill);
+      background: var(--primary);
+      color: var(--white);
+      font-size: 14px;
+      line-height: 1.29;
+      letter-spacing: -0.224px;
+    }
+
+    .card.dark .pill {
+      color: var(--primary-dark);
+      background: rgba(41,151,255,0.13);
+      border: 1px solid rgba(41,151,255,0.22);
+    }
+
+    .card h3 {
+      margin: 28px 0 14px;
+      font-family: var(--font-display);
+      font-size: clamp(30px, 2.8vw, 42px);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.28px;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--ink-muted);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+    }
+
+    .card.dark p { color: #cccccc; }
+
+    .codebox {
+      margin-top: 30px;
+      padding: 18px 20px;
+      border-radius: 11px;
+      background: var(--parchment);
+      border: 1px solid var(--divider);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--ink-muted);
+      white-space: pre-wrap;
+    }
+
+    .card.dark .codebox {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.14);
+      color: var(--white);
+    }
+
+    .center-arrow {
+      align-self: center;
+      height: 1px;
+      background: var(--primary);
+      position: relative;
+    }
+
+    .center-arrow::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      top: -5px;
+      width: 11px;
+      height: 11px;
+      border-top: 1px solid var(--primary);
+      border-right: 1px solid var(--primary);
+      transform: rotate(45deg);
+    }
+
+    .bad-state {
+      max-width: 760px;
+      margin: 28px auto 0;
+      padding: 22px 26px;
+      border-radius: var(--radius-lg);
+      background: var(--canvas);
+      border: 1px solid var(--hairline);
+      text-align: center;
+      color: var(--ink-muted);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+    }
+
+    .bad-state strong { color: var(--ink); }
+
+    .pattern-section {
+      background: var(--canvas);
+      padding: 86px 24px 92px;
+    }
+
+    .pattern-grid {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .pattern-card {
+      border-radius: var(--radius-lg);
+      padding: 34px;
+      min-height: 470px;
+      border: 1px solid var(--hairline);
+      background: var(--parchment);
+    }
+
+    .pattern-card.dark {
+      background: var(--dark-2);
+      color: var(--white);
+      border-color: var(--dark-2);
+    }
+
+    .pattern-card h3 {
+      margin: 22px 0 14px;
+      font-family: var(--font-display);
+      font-size: 34px;
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.28px;
+    }
+
+    .pattern-card p {
+      margin: 0;
+      color: var(--ink-muted);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+    }
+
+    .pattern-card.dark p { color: #cccccc; }
+
+    .checklist {
+      margin-top: 24px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .check {
+      padding: 13px 15px;
+      border-radius: 11px;
+      background: var(--canvas);
+      border: 1px solid var(--divider);
+      font-size: 14px;
+      line-height: 1.43;
+      letter-spacing: -0.224px;
+      color: var(--ink-muted);
+    }
+
+    .pattern-card.dark .check {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.14);
+      color: #cccccc;
+    }
+
+    .ai-section {
+      background: var(--dark-2);
+      color: var(--white);
+      padding: 90px 24px 96px;
+    }
+
+    .ai-section .section-head p { color: #cccccc; }
+
+    .ai-grid {
+      max-width: 1180px;
+      margin: 44px auto 0;
+      display: grid;
+      grid-template-columns: 1fr 82px 1fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .ai-card {
+      min-height: 320px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: var(--radius-lg);
+      padding: 34px;
+    }
+
+    .ai-card strong {
+      display: block;
+      font-family: var(--font-display);
+      font-size: clamp(30px, 2.8vw, 42px);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.28px;
+      margin: 18px 0 14px;
+    }
+
+    .ai-card span {
+      color: #cccccc;
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+    }
+
+    .ai-arrow {
+      align-self: center;
+      height: 1px;
+      background: var(--primary-dark);
+      position: relative;
+    }
+
+    .ai-arrow::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      top: -5px;
+      width: 11px;
+      height: 11px;
+      border-top: 1px solid var(--primary-dark);
+      border-right: 1px solid var(--primary-dark);
+      transform: rotate(45deg);
+    }
+
+    .conclusion {
+      max-width: 860px;
+      margin: 44px auto 0;
+      background: var(--canvas);
+      color: var(--ink);
+      border-radius: var(--radius-lg);
+      padding: 34px 38px;
+      text-align: center;
+    }
+
+    .conclusion .pill { margin-bottom: 18px; }
+    .conclusion h2 { margin: 0; }
+    .conclusion p {
+      margin: 18px auto 0;
+      color: var(--ink-muted);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+    }
+
+    .footer {
+      background: var(--parchment);
+      padding: 38px 24px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+      letter-spacing: -0.12px;
+      text-align: center;
+    }
+
+    @media (max-width: 980px) {
+      .problem-grid, .ai-grid { grid-template-columns: 1fr; }
+      .center-arrow, .ai-arrow { width: 1px; height: 42px; justify-self: center; }
+      .center-arrow::after, .ai-arrow::after { right: -5px; top: auto; bottom: 0; transform: rotate(135deg); }
+      .pattern-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+  <meta name="zukai:published" content="2026-06-08" />
+  <link rel="stylesheet" href="../assets/site-chrome.css" />
+</head>
+<body>
+  <nav class="site-chrome-nav" aria-label="サイト">
+    <div class="site-chrome-nav-inner">
+      <a href="../index.html">← 図解ギャラリー</a>
+      <a href="https://tech.algomatic.jp/entry/advent-calendar/2026-06/capybara">元記事を読む</a>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero" aria-labelledby="title">
+      <div class="hero-inner">
+        <div class="kicker"><span class="kicker-dot"></span>図解構成 / Capability-independent Codebase</div>
+        <h1 id="title">注意力に依存しない<br>コードベース。</h1>
+        <p class="lead">AIも人間も間違えます。だから、良い実装を期待するのではなく、悪い状態を作れない入口と型を設計します。</p>
+        <p class="source-note">Source: Algomatic Tech Blog「<a href="https://tech.algomatic.jp/entry/advent-calendar/2026-06/capybara">実装者の能力に依存しないコードベース</a>」をもとに再構成。</p>
+      </div>
+    </section>
+
+    <section class="problem-section" aria-label="注意力に依存する問題">
+      <div class="section-head">
+        <h2>「気をつけてね」は、設計ではない。</h2>
+        <p>手順を呼び出し側が毎回覚えるコードでは、1行抜けただけで業務上不完全な状態ができます。</p>
+      </div>
+
+      <div class="problem-grid">
+        <article class="card light">
+          <div>
+            <span class="pill">Bad</span>
+            <h3>呼び出し側が、毎回覚える。</h3>
+            <p>注文を作ったら、保存し、監査ログも忘れずに書く。複数箇所に広がるほど、注意力への依存が増えます。</p>
+          </div>
+          <div class="codebox">const order = Order.create(input)
+await orderRepository.save(order)
+await auditLogRepository.record(order)</div>
+        </article>
+
+        <div class="center-arrow" aria-hidden="true"></div>
+
+        <article class="card dark">
+          <div>
+            <span class="pill">Good</span>
+            <h3>業務操作として、閉じる。</h3>
+            <p>必要な手順を placeOrder の内部に閉じます。利用側は個別手順を知らず、正しい入口だけを使います。</p>
+          </div>
+          <div class="codebox">await placeOrder({
+  customerId,
+  items,
+  requestedBy,
+})</div>
+        </article>
+      </div>
+
+      <div class="bad-state"><strong>防ぎたい状態:</strong> 注文は存在するのに、監査ログがない。これはレビューで見つけるより、構造で作れなくする方が強い。</div>
+    </section>
+
+    <section class="pattern-section" aria-label="2つの設計パターン">
+      <div class="section-head">
+        <h2>入口と型で、不正状態を閉じ込める。</h2>
+        <p>解き方は文脈次第ですが、共通する狙いは「呼び出し側の自由な組み合わせ」を減らすことです。</p>
+      </div>
+
+      <div class="pattern-grid">
+        <article class="pattern-card">
+          <span class="pill">Operation</span>
+          <h3>業務操作に名前を付ける。</h3>
+          <p>create / save / audit のような個別手順を外へ漏らさず、業務上意味のある関数を入口にします。</p>
+          <div class="codebox">export async function placeOrder(input) {
+  const order = createOrder(input)
+  await saveOrder(order)
+  await recordOrderAuditLog(order)
+  return order
+}</div>
+          <div class="checklist">
+            <div class="check">内部処理は外部モジュールから直接呼べないようにする。</div>
+            <div class="check">イベント駆動で「注文作成」を起点に監査ログを出す選択肢もある。</div>
+          </div>
+        </article>
+
+        <article class="pattern-card dark">
+          <span class="pill">Type / Factory</span>
+          <h3>ありえない組み合わせを作れなくする。</h3>
+          <p>email 通知なのに phoneNumber を渡せるような状態を、型や factory でビルド前に止めます。</p>
+          <div class="codebox">sendNotification(emailNotification({
+  to: emailAddress,
+  subject,
+  body,
+}))
+
+sendNotification(smsNotification({
+  to: phoneNumber,
+  body,
+}))</div>
+          <div class="checklist">
+            <div class="check">通知チャネルと宛先の対応関係を呼び出し側に任せない。</div>
+            <div class="check">イベント名と種別、外部サービスと認証方式、状態と操作にも同じ考え方を使う。</div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="ai-section" aria-label="AI時代の意味">
+      <div class="section-head">
+        <h2>AIコーディング時代ほど、この原則が効く。</h2>
+        <p>AI固有の問題ではありません。信用できない実装者と働く前提では、人間でもAIでも、間違えようがない設計が必要です。</p>
+      </div>
+
+      <div class="ai-grid">
+        <article class="ai-card">
+          <span class="pill">Weakness</span>
+          <strong>AIは間違える。</strong>
+          <span>仕様を取り違えたり、呼び出し側の手順を抜かしたりします。だから、レビュー頼みではなく構造で止めます。</span>
+        </article>
+        <div class="ai-arrow" aria-hidden="true"></div>
+        <article class="ai-card">
+          <span class="pill">Strength</span>
+          <strong>AIは徹底できる。</strong>
+          <span>人間が面倒で崩しがちな厳密なルールも、疲れずに守れます。だから、設計をコードベースに埋め込みます。</span>
+        </article>
+      </div>
+
+      <div class="conclusion">
+        <span class="pill">Conclusion</span>
+        <h2>レビューで見つけるより、そもそも作れない形にする。</h2>
+        <p>良いコードを書くことを実装者に期待するのではなく、悪い状態を作れない入口、型、factory、イベント境界をコードベースに置きます。</p>
+      </div>
+    </section>
+
+    <footer class="footer site-chrome-footer">
+      <p>Algomatic Tech Blog の記事を zukai-creator で再構成した非公式図解です。</p>
+      <p>© 図解構成: Go (@53able) · Designed with Apple-style tokens</p>
+    </footer>
+  </main>
+</body>
+</html>

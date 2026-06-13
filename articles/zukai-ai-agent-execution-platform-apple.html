@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AIエージェントは、どこで走るのか</title>
+  <style>
+    :root {
+      --primary: #0066cc;
+      --primary-dark: #2997ff;
+      --ink: #1d1d1f;
+      --ink-muted: #333333;
+      --muted: #7a7a7a;
+      --hairline: #e0e0e0;
+      --divider: #f0f0f0;
+      --canvas: #ffffff;
+      --parchment: #f5f5f7;
+      --pearl: #fafafc;
+      --dark-1: #272729;
+      --dark-2: #2a2a2c;
+      --dark-3: #252527;
+      --white: #ffffff;
+      --radius-lg: 18px;
+      --radius-pill: 9999px;
+      --font-display: "SF Pro Display", system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+      --font-text: "SF Pro Text", system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: var(--font-text);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+    }
+
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .hero {
+      min-height: 42vh;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 80px 24px 64px;
+      background: var(--canvas);
+    }
+
+    .hero-inner { max-width: 980px; }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--primary);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+      margin-bottom: 18px;
+    }
+
+    .kicker-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+
+    h1 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(40px, 5vw, 64px);
+      font-weight: 600;
+      line-height: 1.07;
+      letter-spacing: -0.28px;
+    }
+
+    .lead {
+      max-width: 860px;
+      margin: 24px auto 0;
+      font-family: var(--font-display);
+      font-size: clamp(21px, 2.4vw, 28px);
+      font-weight: 400;
+      line-height: 1.25;
+      letter-spacing: 0.196px;
+      color: var(--ink-muted);
+    }
+
+    .source-note {
+      margin-top: 28px;
+      font-size: 14px;
+      line-height: 1.43;
+      letter-spacing: -0.224px;
+      color: var(--muted);
+    }
+
+    .layer-section {
+      background: var(--parchment);
+      padding: 80px 24px 88px;
+    }
+
+    .section-head {
+      max-width: 940px;
+      margin: 0 auto 44px;
+      text-align: center;
+    }
+
+    h2 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(34px, 3vw, 44px);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.28px;
+    }
+
+    .section-head p {
+      max-width: 800px;
+      margin: 16px auto 0;
+      color: var(--ink-muted);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+    }
+
+    .execution-stack {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: grid;
+      gap: 14px;
+    }
+
+    .stack-row {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .row-label {
+      display: grid;
+      place-items: center;
+      text-align: center;
+      background: var(--canvas);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      font-family: var(--font-display);
+      font-size: 21px;
+      font-weight: 600;
+      line-height: 1.19;
+      letter-spacing: 0.231px;
+    }
+
+    .row-content {
+      background: var(--canvas);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-lg);
+      padding: 24px 28px;
+    }
+
+    .row-content.dark {
+      background: var(--dark-1);
+      color: var(--white);
+      border-color: var(--dark-1);
+    }
+
+    .row-content strong {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 600;
+      line-height: 1.14;
+      letter-spacing: -0.28px;
+      margin-bottom: 8px;
+    }
+
+    .row-content span {
+      color: var(--ink-muted);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+    }
+
+    .row-content.dark span { color: #cccccc; }
+
+    .kernel-grid {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+
+    .kernel-pill {
+      padding: 12px 10px;
+      border-radius: var(--radius-pill);
+      background: rgba(41,151,255,0.13);
+      color: var(--primary-dark);
+      border: 1px solid rgba(41,151,255,0.22);
+      font-size: 14px;
+      line-height: 1.29;
+      letter-spacing: -0.224px;
+      text-align: center;
+    }
+
+    .failure-note {
+      max-width: 1120px;
+      margin: 22px auto 0;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .failure-note div {
+      background: var(--canvas);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      color: var(--ink-muted);
+      font-size: 14px;
+      line-height: 1.43;
+      letter-spacing: -0.224px;
+    }
+
+    .failure-note strong { color: var(--ink); }
+
+    .isolation-section {
+      background: var(--dark-2);
+      color: var(--white);
+      padding: 90px 24px 96px;
+    }
+
+    .isolation-section .section-head p { color: #cccccc; }
+
+    .model-track {
+      max-width: 1180px;
+      margin: 42px auto 0;
+    }
+
+    .axis {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      color: #cccccc;
+      font-size: 14px;
+      line-height: 1.43;
+      letter-spacing: -0.224px;
+      margin-bottom: 14px;
+    }
+
+    .axis span:last-child { text-align: right; color: var(--primary-dark); }
+
+    .axis-line {
+      position: relative;
+      height: 2px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.28), var(--primary-dark));
+      margin-bottom: 22px;
+    }
+
+    .axis-line::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      top: -5px;
+      width: 12px;
+      height: 12px;
+      border-top: 2px solid var(--primary-dark);
+      border-right: 2px solid var(--primary-dark);
+      transform: rotate(45deg);
+    }
+
+    .model-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+    }
+
+    .model-card {
+      min-height: 310px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .model-card .tag {
+      display: inline-flex;
+      align-self: flex-start;
+      padding: 7px 11px;
+      border-radius: var(--radius-pill);
+      color: var(--primary-dark);
+      background: rgba(41,151,255,0.13);
+      border: 1px solid rgba(41,151,255,0.22);
+      font-size: 12px;
+      line-height: 1;
+      letter-spacing: -0.12px;
+      margin-bottom: 18px;
+    }
+
+    .model-card h3 {
+      margin: 0 0 12px;
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 600;
+      line-height: 1.12;
+      letter-spacing: -0.28px;
+    }
+
+    .model-card p {
+      margin: 0;
+      color: #cccccc;
+      font-size: 14px;
+      line-height: 1.43;
+      letter-spacing: -0.224px;
+    }
+
+    .model-card ul {
+      margin: 18px 0 0;
+      padding-left: 1.1em;
+      color: #cccccc;
+      font-size: 14px;
+      line-height: 1.43;
+      letter-spacing: -0.224px;
+    }
+
+    .decision-section {
+      background: var(--canvas);
+      padding: 86px 24px 92px;
+    }
+
+    .decision-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .decision-grid {
+      margin-top: 42px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .decision-card {
+      text-align: left;
+      background: var(--parchment);
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      min-height: 185px;
+    }
+
+    .decision-card strong {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 600;
+      line-height: 1.14;
+      letter-spacing: -0.28px;
+      margin-bottom: 10px;
+    }
+
+    .decision-card span {
+      color: var(--ink-muted);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+    }
+
+    .conclusion {
+      max-width: 860px;
+      margin: 44px auto 0;
+      background: var(--dark-1);
+      color: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 34px 38px;
+    }
+
+    .conclusion .pill {
+      margin-bottom: 18px;
+    }
+
+    .conclusion h2 { margin: 0; }
+
+    .conclusion p {
+      margin: 18px auto 0;
+      color: #cccccc;
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+    }
+
+    .footer {
+      background: var(--parchment);
+      padding: 38px 24px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+      letter-spacing: -0.12px;
+      text-align: center;
+    }
+
+    @media (max-width: 1080px) {
+      .model-grid { grid-template-columns: 1fr 1fr; }
+      .decision-grid { grid-template-columns: 1fr 1fr; }
+      .kernel-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 760px) {
+      .stack-row { grid-template-columns: 1fr; }
+      .failure-note { grid-template-columns: 1fr; }
+      .model-grid { grid-template-columns: 1fr; }
+      .decision-grid { grid-template-columns: 1fr; }
+      .kernel-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+  <meta name="zukai:published" content="2026-06-04" />
+  <link rel="stylesheet" href="../assets/site-chrome.css" />
+</head>
+<body>
+  <nav class="site-chrome-nav" aria-label="サイト">
+    <div class="site-chrome-nav-inner">
+      <a href="../index.html">← 図解ギャラリー</a>
+      <a href="https://tech.algomatic.jp/entry/dvent-calendar/2026-06/ai-agent-execution-platform">元記事を読む</a>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero" aria-labelledby="title">
+      <div class="hero-inner">
+        <div class="kicker"><span class="kicker-dot"></span>図解構成 / AI Agent Execution Platform</div>
+        <h1 id="title">AIエージェントは、<br>どこで走るのか。</h1>
+        <p class="lead">モデルの賢さだけでは足りません。npm install、ファイル変更、外部APIアクセスを許すなら、最後に効くのはOSの境界です。</p>
+        <p class="source-note">Source: Algomatic Tech Blog「<a href="https://tech.algomatic.jp/entry/dvent-calendar/2026-06/ai-agent-execution-platform">AIエージェントの実行基盤</a>」をもとに再構成。</p>
+      </div>
+    </section>
+
+    <section class="layer-section" aria-label="一行の実行とOS境界">
+      <div class="section-head">
+        <h2>その一行は、プロセスになり、カーネル境界を通る。</h2>
+        <p>エージェントが生成したコマンドは、OSから見ると信頼しきれないコードです。CPU、メモリ、ファイル、ネットワークに触れるたび、カーネルがどこまで許すかを決めます。</p>
+      </div>
+
+      <div class="execution-stack">
+        <div class="stack-row">
+          <div class="row-label">Agent</div>
+          <div class="row-content"><strong>AIエージェント</strong><span>「依存を入れてテストして」と判断し、コマンドやコード変更を生成する。</span></div>
+        </div>
+        <div class="stack-row">
+          <div class="row-label">Command</div>
+          <div class="row-content"><strong>npm install / test / file edit</strong><span>shell やランタイム経由で起動し、ファイル、ネットワーク、子プロセスに触れる。</span></div>
+        </div>
+        <div class="stack-row">
+          <div class="row-label">Process</div>
+          <div class="row-content"><strong>プロセス</strong><span>実行中の最小単位。外界に触れる操作は system call としてカーネルへ届く。</span></div>
+        </div>
+        <div class="stack-row">
+          <div class="row-label">Kernel</div>
+          <div class="row-content dark">
+            <strong>カーネルが、走らせ方と止め方を決める。</strong>
+            <span>遅い、kill された、EPERM で弾かれた。原因はモデルではなく、境界設定にあることも多い。</span>
+            <div class="kernel-grid">
+              <div class="kernel-pill">scheduler<br>CPU割り当て</div>
+              <div class="kernel-pill">cgroup<br>資源上限</div>
+              <div class="kernel-pill">namespace<br>見える世界</div>
+              <div class="kernel-pill">seccomp<br>syscall制限</div>
+              <div class="kernel-pill">capabilities<br>権限分解</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="failure-note">
+        <div><strong>遅い</strong><br>モデルの推論ではなく、CPUスケジューリングや周辺負荷の問題かもしれない。</div>
+        <div><strong>途中で落ちた</strong><br>コード不具合ではなく、cgroup 上限と OOM killer の結果かもしれない。</div>
+        <div><strong>権限エラー</strong><br>seccomp、namespace、capabilities によって意図的に止められている可能性がある。</div>
+      </div>
+    </section>
+
+    <section class="isolation-section" aria-label="隔離モデル比較">
+      <div class="section-head">
+        <h2>実行環境は、host kernel との距離で見る。</h2>
+        <p>container か VM かという名前より、host kernel をどこまで共有するか、syscall・ファイル・ネットワークをどこまで絞るかが本質です。</p>
+      </div>
+
+      <div class="model-track">
+        <div class="axis"><span>軽い / 速い / 広い権限</span><span>隔離が強い / 重い / 小さい攻撃面</span></div>
+        <div class="axis-line" aria-hidden="true"></div>
+
+        <div class="model-grid">
+          <article class="model-card">
+            <div>
+              <span class="tag">host</span>
+              <h3>ほぼ素のホスト</h3>
+              <p>ローカルの自由度は高いが、ファイル、メール、カレンダー、shell など事故時の影響範囲も広い。</p>
+            </div>
+            <ul><li>速い</li><li>便利</li><li>権限が広すぎる</li></ul>
+          </article>
+
+          <article class="model-card">
+            <div>
+              <span class="tag">container</span>
+              <h3>Container</h3>
+              <p>namespace、cgroup、seccomp、capabilities で囲う。軽い一方、host kernel は共有する。</p>
+            </div>
+            <ul><li>起動が軽い</li><li>host kernel共有</li><li>mount / egress / secret に注意</li></ul>
+          </article>
+
+          <article class="model-card">
+            <div>
+              <span class="tag">syscall</span>
+              <h3>gVisor</h3>
+              <p>Sentry が syscall を受け、host kernel へ直接触れる面を減らす。互換性と性能にはトレードオフがある。</p>
+            </div>
+            <ul><li>syscall面を縮小</li><li>userspace kernel</li><li>互換性に注意</li></ul>
+          </article>
+
+          <article class="model-card">
+            <div>
+              <span class="tag">microVM</span>
+              <h3>Firecracker</h3>
+              <p>workload ごとに guest kernel と hardware virtualization の境界を置く。serverless 的な使い捨て実行と相性がよい。</p>
+            </div>
+            <ul><li>host kernel非共有</li><li>強い隔離</li><li>containerより重い</li></ul>
+          </article>
+
+          <article class="model-card">
+            <div>
+              <span class="tag">OCI + VM</span>
+              <h3>Kata Containers</h3>
+              <p>コンテナの操作感のまま、軽量VMの中で pod や docker run を動かす。Kubernetes と接続しやすい。</p>
+            </div>
+            <ul><li>VM級隔離</li><li>kubectl と相性</li><li>VMMを選べる</li></ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="decision-section" aria-label="実行基盤の判断軸">
+      <div class="decision-inner">
+        <h2>選ぶべきものは、要件とデータの性質で変わる。</h2>
+        <p class="lead">microVM が常に正解でも、container が常に危険でもありません。見るべきは、何を許し、どこで止め、何を記録するかです。</p>
+
+        <div class="decision-grid">
+          <div class="decision-card"><strong>host kernel</strong><span>共有するのか、guest kernel と VM 境界を置くのか。</span></div>
+          <div class="decision-card"><strong>filesystem</strong><span>どのディレクトリを見せ、書き込みをどこまで許すのか。</span></div>
+          <div class="decision-card"><strong>network egress</strong><span>外部API、package registry、任意URLへの通信をどう絞るのか。</span></div>
+          <div class="decision-card"><strong>secrets</strong><span>秘密情報を環境内に露出させるのか、brokering するのか。</span></div>
+          <div class="decision-card"><strong>audit</strong><span>コマンド、ファイル差分、通信、失敗理由をどの粒度で残すのか。</span></div>
+          <div class="decision-card"><strong>cost / latency</strong><span>起動速度、互換性、隔離強度、運用コストをどう天秤にかけるのか。</span></div>
+        </div>
+
+        <div class="conclusion">
+          <span class="pill">Conclusion</span>
+          <h2>新しいのは、相手がエージェントになったこと。</h2>
+          <p>効く部品は、プロセスを分け、資源に上限を置き、system call を絞り、ネットワークの向きを決めるという、OSが昔から持ってきた境界です。</p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer site-chrome-footer">
+      <p>Algomatic Tech Blog の記事を zukai-creator で再構成した非公式図解です。</p>
+      <p>© 図解構成: Go (@53able) · Designed with Apple-style tokens</p>
+    </footer>
+  </main>
+</body>
+</html>
