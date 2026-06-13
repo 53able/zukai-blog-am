@@ -43,7 +43,7 @@ assets/favicon.svg      サイト favicon（図解ノードマーク）
 assets/apple-touch-icon.svg
 assets/apple-touch-icon.png
 assets/og-default.png   OGP / Twitter Card 既定画像（1200x630）
-assets/og-default.svg   OG 画像の SVG 原稿（1200 正方形 → 630 にクロップ）
+assets/og-default.svg   OG 画像の SVG 原稿（1200x630）
 articles/*.html         図解本体（各 HTML はスタイル自己完結 + chrome リンク）
 DESIGN-apple.md         トンマナ定義
 CONTEXT.md              用語・設計合意
