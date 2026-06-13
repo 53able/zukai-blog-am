@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Algomatic Tech Blog Zukai Gallery">
+  <rect width="1200" height="630" fill="#f5f5f7"/>
+  <rect x="738" y="96" width="390" height="440" rx="32" fill="#ffffff" stroke="#e0e0e0"/>
+  <g transform="translate(933 316) scale(1)">
+    <line x1="-88" y1="72" x2="88" y2="-72" stroke="#e0e0e0" stroke-width="10" stroke-linecap="round"/>
+    <line x1="-88" y1="72" x2="0" y2="0" stroke="#e0e0e0" stroke-width="10" stroke-linecap="round"/>
+    <circle cx="88" cy="-72" r="22" fill="#1d1d1f"/>
+    <circle cx="-88" cy="72" r="22" fill="#1d1d1f"/>
+    <circle cx="0" cy="0" r="28" fill="#0066cc"/>
+  </g>
+  <circle cx="80" cy="74" r="8" fill="#0066cc"/>
+  <text x="104" y="82" fill="#7a7a7a" font-family="SF Pro Text, Hiragino Sans, system-ui, -apple-system, sans-serif" font-size="26" font-weight="600">zukai-creator · 非公式図解</text>
+  <text x="80" y="176" fill="#1d1d1f" font-family="SF Pro Display, Hiragino Sans, system-ui, -apple-system, sans-serif" font-size="58" font-weight="600" letter-spacing="-0.5">Algomatic Tech Blog</text>
+  <text x="80" y="254" fill="#1d1d1f" font-family="SF Pro Display, Hiragino Sans, system-ui, -apple-system, sans-serif" font-size="58" font-weight="600" letter-spacing="-0.5">図解ギャラリー</text>
+  <text x="80" y="338" fill="#7a7a7a" font-family="SF Pro Text, Hiragino Sans, system-ui, -apple-system, sans-serif" font-size="30" font-weight="400">Tech Blog の記事を、読みやすい</text>
+  <text x="80" y="380" fill="#7a7a7a" font-family="SF Pro Text, Hiragino Sans, system-ui, -apple-system, sans-serif" font-size="30" font-weight="400">図解構成に再編集した一覧</text>
+  <rect x="80" y="424" width="220" height="7" rx="3.5" fill="#0066cc"/>
+  <text x="80" y="506" fill="#7a7a7a" font-family="SF Pro Text, Hiragino Sans, system-ui, -apple-system, sans-serif" font-size="23" font-weight="400">全文は各元記事へ · Algomatic Tech Blog</text>
+</svg>

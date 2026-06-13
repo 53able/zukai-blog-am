@@ -1,9 +1,6 @@
 {
-  "generatedAt": "2026-06-13T09:41:55.603Z",
-  "siteTitle": "Algomatic Tech Blog 図解ギャラリー",
   "entries": [
     {
-      "slug": "creator",
       "title": "図解は、描く前に決まる",
       "publishedAt": "2026-06-12",
       "htmlPath": "articles/zukai-creator-apple.html",
@@ -12,7 +9,6 @@
       "lead": "Mermaidでうまくいかない原因は、描画形式ではなく情報設計を飛ばすこと。先に目的、要素、関係、型を整えます。"
     },
     {
-      "slug": "workforce-reallocation-ai",
       "title": "AI時代の異動配置は、人をどう活かすかへ",
       "publishedAt": "2026-06-11",
       "htmlPath": "articles/zukai-workforce-reallocation-ai-apple.html",
@@ -21,7 +17,6 @@
       "lead": "生成AIで業務・タスク・必要スキルが変わる。だから配置は、固定組織への割当ではなく、変化する組織への再設計になります。"
     },
     {
-      "slug": "my-keymap",
       "title": "指の仕事を、身体に合わせて配り直す",
       "publishedAt": "2026-06-10",
       "htmlPath": "articles/zukai-my-keymap-apple.html",
@@ -30,7 +25,6 @@
       "lead": "小指に集まりすぎた負担を親指へ。遠い数字と矢印を f / j の触覚基準へ。"
     },
     {
-      "slug": "codex-rust-claude-code-bun",
       "title": "同じNodeなしでも、向かう先が違う",
       "publishedAt": "2026-06-09",
       "htmlPath": "articles/zukai-codex-rust-claude-code-bun-apple.html",
@@ -39,7 +33,6 @@
       "lead": "CodexはRustで実行基盤へ。Claude CodeはBunでTypeScriptエコシステムの速さと拡張性へ。"
     },
     {
-      "slug": "capybara",
       "title": "注意力に依存しないコードベース",
       "publishedAt": "2026-06-08",
       "htmlPath": "articles/zukai-capybara-apple.html",
@@ -48,7 +41,6 @@
       "lead": "AIも人間も間違えます。だから、良い実装を期待するのではなく、悪い状態を作れない入口と型を設計します。"
     },
     {
-      "slug": "pm-harness",
       "title": "PMOをAIに任せるのではない",
       "publishedAt": "2026-06-05",
       "htmlPath": "articles/zukai-pm-harness-apple.html",
@@ -57,7 +49,6 @@
       "lead": "PMOの制御構造を、AIも扱える形にする。原則、危険信号、手順に分解し、最後の線引きは人間が握ります。"
     },
     {
-      "slug": "ai-agent-execution-platform",
       "title": "AIエージェントは、どこで走るのか",
       "publishedAt": "2026-06-04",
       "htmlPath": "articles/zukai-ai-agent-execution-platform-apple.html",
@@ -66,7 +57,6 @@
       "lead": "モデルの賢さだけでは足りません。npm install、ファイル変更、外部APIアクセスを許すなら、最後に効くのはOSの境界です。"
     },
     {
-      "slug": "ai-project-accuracy-verification",
       "title": "精度検証の主役は、精度ではない",
       "publishedAt": "2026-06-03",
       "htmlPath": "articles/zukai-ai-project-accuracy-verification-apple.html",
@@ -75,7 +65,6 @@
       "lead": "見るべきものは、顧客期待と提供価値のギャップが埋まるか。精度は、その判断に使う物差しの一つです。"
     },
     {
-      "slug": "deepswe",
       "title": "DeepSWEは何を測るのか",
       "publishedAt": "2026-06-02",
       "htmlPath": "articles/zukai-deepswe-apple.html",
@@ -84,7 +73,6 @@
       "lead": "短い指示からコードベースを探索し、長い実装を完遂し、振る舞いで検証する力を測ろうとするベンチマークです。"
     },
     {
-      "slug": "ai-architecture-soc",
       "title": "AI時代でも、関心の分離は死なない",
       "publishedAt": "2026-06-01",
       "htmlPath": "articles/zukai-ai-architecture-soc-apple.html",

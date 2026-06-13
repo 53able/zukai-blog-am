@@ -9,12 +9,6 @@ const ALGOMATIC_HOST = "tech.algomatic.jp";
 
 /**
  * @param {string} html
- * @returns {string}
- */
-export const normalizeArticleHtml = (html) => html;
-
-/**
- * @param {string} html
  * @returns {{ sourceUrl: string; sourceTitle: string } | null}
  */
 export const extractAlgomaticSource = (html) => {

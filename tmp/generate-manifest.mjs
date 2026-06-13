@@ -19,16 +19,8 @@ const ARTICLES_DIR = path.join(ROOT, "articles");
 const MANIFEST_PATH = path.join(ROOT, "manifest.json");
 
 /**
- * @param {string} fileName
- * @returns {string}
- */
-const toSlug = (fileName) =>
-  fileName.replace(/^zukai-/, "").replace(/-apple\.html$/, "");
-
-/**
  * @param {unknown} value
  * @returns {value is {
- *   slug: string;
  *   title: string;
  *   publishedAt: string;
  *   htmlPath: string;
@@ -44,7 +36,6 @@ const isManifestEntry = (value) => {
 
   const entry = /** @type {Record<string, unknown>} */ (value);
   return (
-    typeof entry.slug === "string" &&
     typeof entry.title === "string" &&
     typeof entry.publishedAt === "string" &&
     typeof entry.htmlPath === "string" &&
@@ -71,7 +62,6 @@ const buildEntry = async (fileName) => {
   }
 
   return {
-    slug: toSlug(fileName),
     title,
     publishedAt,
     htmlPath: `articles/${fileName}`,
@@ -95,11 +85,7 @@ const main = async () => {
     throw new Error("manifest entry validation failed");
   }
 
-  const manifest = {
-    generatedAt: new Date().toISOString(),
-    siteTitle: "Algomatic Tech Blog 図解ギャラリー",
-    entries,
-  };
+  const manifest = { entries };
 
   await writeFile(MANIFEST_PATH, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
   console.log(`wrote ${MANIFEST_PATH} (${entries.length} entries)`);

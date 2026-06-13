@@ -4,7 +4,52 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Algomatic Tech Blog 図解ギャラリー | zukai-creator</title>
+  <!-- zukai-head-meta:start -->
   <meta name="description" content="Algomatic Tech Blog の記事を zukai-creator で再構成した非公式図解一覧です。" />
+  <meta name="author" content="Go (@53able)" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://53able.github.io/zukai-blog-am/" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png" />
+  <meta name="theme-color" content="#0066cc" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Algomatic Tech Blog 図解ギャラリー" />
+  <meta property="og:locale" content="ja_JP" />
+  <meta property="og:title" content="Algomatic Tech Blog 図解ギャラリー | zukai-creator" />
+  <meta property="og:description" content="Algomatic Tech Blog の記事を zukai-creator で再構成した非公式図解一覧です。" />
+  <meta property="og:url" content="https://53able.github.io/zukai-blog-am/" />
+  <meta property="og:image" content="https://53able.github.io/zukai-blog-am/assets/og-default.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Algomatic Tech Blog 図解ギャラリー" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Algomatic Tech Blog 図解ギャラリー | zukai-creator" />
+  <meta name="twitter:description" content="Algomatic Tech Blog の記事を zukai-creator で再構成した非公式図解一覧です。" />
+  <meta name="twitter:image" content="https://53able.github.io/zukai-blog-am/assets/og-default.png" />
+  <meta name="twitter:image:alt" content="Algomatic Tech Blog 図解ギャラリー" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Algomatic Tech Blog 図解ギャラリー",
+  "description": "Algomatic Tech Blog の記事を zukai-creator で再構成した非公式図解一覧です。",
+  "url": "https://53able.github.io/zukai-blog-am/",
+  "inLanguage": "ja",
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "Algomatic Tech Blog 図解ギャラリー",
+    "url": "https://53able.github.io/zukai-blog-am/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Go (@53able)"
+  },
+  "image": [
+    "https://53able.github.io/zukai-blog-am/assets/og-default.png"
+  ]
+}
+  </script>
+<!-- zukai-head-meta:end -->
   <link rel="stylesheet" href="assets/site-chrome.css" />
 </head>
 <body class="page-index">
@@ -77,7 +122,6 @@
 
     const isEntry = (value) =>
       isObject(value) &&
-      hasString(value, "slug") &&
       hasString(value, "title") &&
       hasString(value, "publishedAt") &&
       hasString(value, "htmlPath") &&
