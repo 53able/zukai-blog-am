@@ -14,7 +14,10 @@
 ```bash
 node tmp/backfill-articles.mjs
 node tmp/generate-manifest.mjs
+node tmp/verify-meta.mjs
 ```
+
+`backfill-articles.mjs` は nav・footer・`site-chrome.css` に加え、`index.html` と各記事の OGP・Twitter Card・canonical・JSON-LD を `<!-- zukai-head-meta -->` ブロックとして同期します。
 
 3. `manifest.json` の diff を確認して commit / push する
 
@@ -34,6 +37,10 @@ node tmp/generate-manifest.mjs
 index.html              図解一覧（固定シェル）
 manifest.json           図解メタデータ（生成物）
 assets/site-chrome.css  共通 nav / footer / 一覧スタイル
+assets/favicon.svg      サイト favicon
+assets/apple-touch-icon.png
+assets/og-default.png   OGP / Twitter Card 既定画像（1200x630）
+assets/og-default.svg   OG 画像の SVG 原稿
 articles/*.html         図解本体（各 HTML はスタイル自己完結 + chrome リンク）
 DESIGN-apple.md         トンマナ定義
 CONTEXT.md              用語・設計合意

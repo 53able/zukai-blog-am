@@ -8,11 +8,15 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   extractAlgomaticSource,
+  extractLead,
+  extractTitle,
   fetchPublishedDate,
 } from "./html-parse.mjs";
+import { buildArticleHeadMeta, buildIndexHeadMeta, upsertHeadMetaBlock } from "./meta-build.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ARTICLES_DIR = path.join(ROOT, "articles");
+const INDEX_PATH = path.join(ROOT, "index.html");
 
 const FOOTER_HTML = `<footer class="footer site-chrome-footer">
       <p>Algomatic Tech Blog の記事を zukai-creator で再構成した非公式図解です。</p>
@@ -105,15 +109,41 @@ const backfillArticle = async (fileName) => {
     throw new Error(`${fileName}: published date unavailable`);
   }
 
+  const title = extractTitle(html);
+  const lead = extractLead(html);
+
+  if (!title || !lead) {
+    throw new Error(`${fileName}: title or lead missing for head meta`);
+  }
+
+  const withPublished = upsertPublishedMeta(html, published);
+  const withMeta = upsertHeadMetaBlock(
+    withPublished,
+    buildArticleHeadMeta({
+      fileName,
+      title,
+      lead,
+      publishedAt: published,
+    }),
+  );
+
   const nextHtml = replaceFooter(
-    upsertNav(
-      upsertChromeStylesheet(upsertPublishedMeta(html, published)),
-      source.sourceUrl,
-    ),
+    upsertNav(upsertChromeStylesheet(withMeta), source.sourceUrl),
   );
 
   await writeFile(filePath, nextHtml, "utf8");
   console.log(`backfilled ${fileName} (${published})`);
+};
+
+/**
+ * @returns {Promise<void>}
+ */
+const backfillIndex = async () => {
+  const html = await readFile(INDEX_PATH, "utf8");
+  const nextHtml = upsertHeadMetaBlock(html, buildIndexHeadMeta());
+
+  await writeFile(INDEX_PATH, nextHtml, "utf8");
+  console.log("backfilled index.html");
 };
 
 const main = async () => {
@@ -122,6 +152,7 @@ const main = async () => {
     .sort();
 
   await Promise.all(files.map(backfillArticle));
+  await backfillIndex();
 };
 
 main().catch((error) => {
