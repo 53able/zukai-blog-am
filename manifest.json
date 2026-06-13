@@ -1,7 +1,16 @@
 {
-  "generatedAt": "2026-06-13T09:22:39.573Z",
+  "generatedAt": "2026-06-13T09:41:55.603Z",
   "siteTitle": "Algomatic Tech Blog 図解ギャラリー",
   "entries": [
+    {
+      "slug": "creator",
+      "title": "図解は、描く前に決まる",
+      "publishedAt": "2026-06-12",
+      "htmlPath": "articles/zukai-creator-apple.html",
+      "sourceUrl": "https://tech.algomatic.jp/entry/2026/06/12/153036",
+      "sourceTitle": "Mermaidでうまく図解できなかったので、図解を作るエージェントスキルを書いた",
+      "lead": "Mermaidでうまくいかない原因は、描画形式ではなく情報設計を飛ばすこと。先に目的、要素、関係、型を整えます。"
+    },
     {
       "slug": "workforce-reallocation-ai",
       "title": "AI時代の異動配置は、人をどう活かすかへ",
