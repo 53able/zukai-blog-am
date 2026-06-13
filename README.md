@@ -19,6 +19,8 @@ node tmp/verify-meta.mjs
 
 `backfill-articles.mjs` は nav・footer・`site-chrome.css` に加え、`index.html` と各記事の OGP・Twitter Card・canonical・JSON-LD を `<!-- zukai-head-meta -->` ブロックとして同期します。
 
+OG 画像や apple-touch-icon の SVG 原稿を編集した場合は `node tmp/generate-assets.mjs` で PNG を再生成します（macOS の `qlmanage` / `sips` が必要）。
+
 3. `manifest.json` の diff を確認して commit / push する
 
 初回追加時は `backfill-articles.mjs` が nav・footer・`site-chrome.css` リンクを自動挿入します。公開日 meta が既にある場合はその値を優先します。
@@ -37,10 +39,11 @@ node tmp/verify-meta.mjs
 index.html              図解一覧（固定シェル）
 manifest.json           図解メタデータ（生成物）
 assets/site-chrome.css  共通 nav / footer / 一覧スタイル
-assets/favicon.svg      サイト favicon
+assets/favicon.svg      サイト favicon（図解ノードマーク）
+assets/apple-touch-icon.svg
 assets/apple-touch-icon.png
 assets/og-default.png   OGP / Twitter Card 既定画像（1200x630）
-assets/og-default.svg   OG 画像の SVG 原稿
+assets/og-default.svg   OG 画像の SVG 原稿（1200 正方形 → 630 にクロップ）
 articles/*.html         図解本体（各 HTML はスタイル自己完結 + chrome リンク）
 DESIGN-apple.md         トンマナ定義
 CONTEXT.md              用語・設計合意

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180" role="img" aria-label="Zukai gallery">
+  <rect width="180" height="180" rx="40" fill="#f5f5f7"/>
+  <line x1="52" y1="128" x2="128" y2="52" stroke="#e0e0e0" stroke-width="8" stroke-linecap="round"/>
+  <line x1="52" y1="128" x2="90" y2="90" stroke="#e0e0e0" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="128" cy="52" r="14" fill="#1d1d1f"/>
+  <circle cx="52" cy="128" r="14" fill="#1d1d1f"/>
+  <circle cx="90" cy="90" r="18" fill="#0066cc"/>
+</svg>
