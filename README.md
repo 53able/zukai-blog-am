@@ -14,10 +14,9 @@
 ```bash
 node tmp/backfill-articles.mjs
 node tmp/generate-manifest.mjs
-node tmp/generate-index.mjs
 ```
 
-3. `manifest.json` と `index.html` の diff を確認して commit / push する
+3. `manifest.json` の diff を確認して commit / push する
 
 初回追加時は `backfill-articles.mjs` が nav・footer・`site-chrome.css` リンクを自動挿入します。公開日 meta が既にある場合はその値を優先します。
 
@@ -32,7 +31,7 @@ node tmp/generate-index.mjs
 ## ディレクトリ
 
 ```text
-index.html              図解一覧（生成物）
+index.html              図解一覧（固定シェル）
 manifest.json           図解メタデータ（生成物）
 assets/site-chrome.css  共通 nav / footer / 一覧スタイル
 articles/*.html         図解本体（各 HTML はスタイル自己完結 + chrome リンク）
