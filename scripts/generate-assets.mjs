@@ -1,6 +1,6 @@
 /**
  * Render SVG brand assets to PNG for OGP and iOS (macOS only: qlmanage + sips).
- * Run via: node tmp/generate-assets.mjs
+ * Run via: node scripts/generate-assets.mjs
  *
  * qlmanage renders SVGs as square thumbnails, so og-default.svg stays as a
  * clean 1200×630 source and this script wraps it into a temporary square SVG
@@ -8,7 +8,8 @@
  */
 
 import { execFile } from "node:child_process";
-import { readFile, rename, unlink, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, rename, rm, unlink, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
@@ -122,37 +123,39 @@ const renderSvgToPng = async (svgFileName, size, outputFileName) => {
 };
 
 const main = async () => {
-  const tmpDir = path.join(ROOT, "tmp");
+  const tmpDir = await mkdtemp(path.join(tmpdir(), "zukai-assets-"));
   const ogSourcePath = path.join(ASSETS_DIR, "og-default.svg");
   const ogSquareSvgPath = path.join(tmpDir, "og-default-square.svg");
   const ogSquarePath = path.join(ASSETS_DIR, "og-default-square.png");
   const ogOutputPath = path.join(ASSETS_DIR, "og-default.png");
 
-  await unlink(ogSquareSvgPath).catch(() => undefined);
-  await unlink(ogSquarePath).catch(() => undefined);
-  await writeOgSquareSvg(ogSourcePath, ogSquareSvgPath);
+  try {
+    await unlink(ogSquarePath).catch(() => undefined);
+    await writeOgSquareSvg(ogSourcePath, ogSquareSvgPath);
 
-  const renderedSquarePath = await renderSvgPathSquare(ogSquareSvgPath, tmpDir, OG_SQUARE);
-  await rename(renderedSquarePath, ogSquarePath);
-  await unlink(ogSquareSvgPath).catch(() => undefined);
+    const renderedSquarePath = await renderSvgPathSquare(ogSquareSvgPath, tmpDir, OG_SQUARE);
+    await rename(renderedSquarePath, ogSquarePath);
 
-  const squareSize = await readImageSize(ogSquarePath);
-  assertSize(squareSize, OG_SQUARE, OG_SQUARE, "og-default square render");
+    const squareSize = await readImageSize(ogSquarePath);
+    assertSize(squareSize, OG_SQUARE, OG_SQUARE, "og-default square render");
 
-  await cropOgFromSquare(ogSquarePath, ogOutputPath);
-  await unlink(ogSquarePath).catch(() => undefined);
+    await cropOgFromSquare(ogSquarePath, ogOutputPath);
+    await unlink(ogSquarePath).catch(() => undefined);
 
-  const ogSize = await readImageSize(ogOutputPath);
-  assertSize(ogSize, OG_WIDTH, OG_HEIGHT, "og-default.png");
+    const ogSize = await readImageSize(ogOutputPath);
+    assertSize(ogSize, OG_WIDTH, OG_HEIGHT, "og-default.png");
 
-  await renderSvgToPng("apple-touch-icon.svg", TOUCH_SIZE, "apple-touch-icon.png");
+    await renderSvgToPng("apple-touch-icon.svg", TOUCH_SIZE, "apple-touch-icon.png");
 
-  const touchSize = await readImageSize(path.join(ASSETS_DIR, "apple-touch-icon.png"));
-  assertSize(touchSize, TOUCH_SIZE, TOUCH_SIZE, "apple-touch-icon.png");
+    const touchSize = await readImageSize(path.join(ASSETS_DIR, "apple-touch-icon.png"));
+    assertSize(touchSize, TOUCH_SIZE, TOUCH_SIZE, "apple-touch-icon.png");
 
-  console.log(`og-default.png ${ogSize.width}x${ogSize.height}`);
-  console.log(`apple-touch-icon.png ${touchSize.width}x${touchSize.height}`);
-  console.log("generated assets/og-default.png and assets/apple-touch-icon.png");
+    console.log(`og-default.png ${ogSize.width}x${ogSize.height}`);
+    console.log(`apple-touch-icon.png ${touchSize.width}x${touchSize.height}`);
+    console.log("generated assets/og-default.png and assets/apple-touch-icon.png");
+  } finally {
+    await rm(tmpDir, { recursive: true, force: true });
+  }
 };
 
 main().catch((error) => {

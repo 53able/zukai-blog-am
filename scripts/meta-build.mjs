@@ -1,6 +1,6 @@
 /**
  * Build SEO / OGP / Twitter Card / JSON-LD head blocks.
- * Run via: node tmp/backfill-articles.mjs
+ * Run via: node scripts/backfill-articles.mjs
  */
 
 import {

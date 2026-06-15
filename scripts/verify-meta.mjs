@@ -1,6 +1,6 @@
 /**
  * Verify OGP / SEO head meta across index and articles.
- * Run via: node tmp/verify-meta.mjs
+ * Run via: node scripts/verify-meta.mjs
  */
 
 import { readdir, readFile } from "node:fs/promises";

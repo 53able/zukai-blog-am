@@ -1,6 +1,6 @@
 /**
  * Generate manifest.json from articles/*.html.
- * Run via: node tmp/generate-manifest.mjs
+ * Run via: node scripts/generate-manifest.mjs
  */
 
 import { readdir, writeFile } from "node:fs/promises";
