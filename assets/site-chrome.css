@@ -17,13 +17,16 @@
   --font-text: "SF Pro Text", system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
 }
 
-.site-chrome-nav {
+.site-chrome-bar {
   position: sticky;
   top: 0;
   z-index: 20;
-  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: saturate(180%) blur(16px);
   border-bottom: 1px solid var(--hairline);
+}
+
+.site-chrome-nav {
+  background: rgba(255, 255, 255, 0.92);
 }
 
 .site-chrome-nav-inner {
@@ -54,7 +57,6 @@
   max-width: 980px;
   margin: 0 auto;
   padding: 32px 24px 48px;
-  border-top: 1px solid var(--divider);
   color: var(--muted);
   font-family: var(--font-text);
   font-size: 12px;
@@ -70,6 +72,26 @@
 
 .site-chrome-footer p:last-child {
   margin-bottom: 0;
+}
+
+.footer.site-chrome-footer {
+  position: relative;
+  isolation: isolate;
+  border-top: none;
+  background: transparent;
+}
+
+.footer.site-chrome-footer::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  border-top: 1px solid var(--hairline);
+  background: var(--parchment);
 }
 
 .page-index {
@@ -103,12 +125,7 @@
 /* —— Index top bar —— */
 
 .gallery-topbar {
-  position: sticky;
-  top: 0;
-  z-index: 20;
   background: rgba(245, 245, 247, 0.88);
-  backdrop-filter: saturate(180%) blur(16px);
-  border-bottom: 1px solid var(--hairline);
 }
 
 .gallery-topbar-inner {

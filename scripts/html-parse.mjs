@@ -1,6 +1,6 @@
 /**
  * HTML parsing helpers for zukai-blog-am manifest generation.
- * Run via: node tmp/generate-manifest.mjs
+ * Run via: node scripts/generate-manifest.mjs
  */
 
 import { readFile } from "node:fs/promises";

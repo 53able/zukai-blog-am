@@ -1,6 +1,9 @@
 /**
- * Backfill article HTML with published meta, site chrome, and footer.
- * Run via: node tmp/backfill-articles.mjs
+ * Backfill article HTML with published meta and head meta blocks.
+ * Run via: node scripts/backfill-articles.mjs
+ *
+ * Site chrome (nav / footer) is synced separately:
+ *   node scripts/sync-chrome.mjs
  */
 
 import { readdir, readFile, writeFile } from "node:fs/promises";
@@ -18,22 +21,6 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const ARTICLES_DIR = path.join(ROOT, "articles");
 const INDEX_PATH = path.join(ROOT, "index.html");
 
-const FOOTER_HTML = `<footer class="footer site-chrome-footer">
-      <p>Algomatic Tech Blog の記事を zukai-creator で再構成した非公式図解です。</p>
-      <p>© 図解構成: Go (@53able) · Designed with Apple-style tokens</p>
-    </footer>`;
-
-/**
- * @param {string} sourceUrl
- * @returns {string}
- */
-const buildNavHtml = (sourceUrl) => `<nav class="site-chrome-nav" aria-label="サイト">
-    <div class="site-chrome-nav-inner">
-      <a href="../index.html">← 図解ギャラリー</a>
-      <a href="${sourceUrl}">元記事を読む</a>
-    </div>
-  </nav>`;
-
 /**
  * @param {string} html
  * @param {string} published
@@ -50,42 +37,6 @@ const upsertPublishedMeta = (html, published) => {
 
   return html.replace("</head>", `  ${meta}\n</head>`);
 };
-
-/**
- * @param {string} html
- * @returns {string}
- */
-const upsertChromeStylesheet = (html) => {
-  const link = `<link rel="stylesheet" href="../assets/site-chrome.css" />`;
-  if (html.includes("site-chrome.css")) {
-    return html;
-  }
-
-  return html.replace("</head>", `  ${link}\n</head>`);
-};
-
-/**
- * @param {string} html
- * @param {string} sourceUrl
- * @returns {string}
- */
-const upsertNav = (html, sourceUrl) => {
-  if (html.includes('class="site-chrome-nav"')) {
-    return html.replace(
-      /<nav class="site-chrome-nav"[\s\S]*?<\/nav>/,
-      buildNavHtml(sourceUrl),
-    );
-  }
-
-  return html.replace("<body>", `<body>\n  ${buildNavHtml(sourceUrl)}\n`);
-};
-
-/**
- * @param {string} html
- * @returns {string}
- */
-const replaceFooter = (html) =>
-  html.replace(/<footer class="footer[^"]*">[\s\S]*?<\/footer>/, FOOTER_HTML);
 
 /**
  * @param {string} fileName
@@ -116,7 +67,7 @@ const backfillArticle = async (fileName) => {
   }
 
   const withPublished = upsertPublishedMeta(html, published);
-  const withMeta = upsertHeadMetaBlock(
+  const nextHtml = upsertHeadMetaBlock(
     withPublished,
     buildArticleHeadMeta({
       fileName,
@@ -124,10 +75,6 @@ const backfillArticle = async (fileName) => {
       lead,
       publishedAt: published,
     }),
-  );
-
-  const nextHtml = replaceFooter(
-    upsertNav(upsertChromeStylesheet(withMeta), source.sourceUrl),
   );
 
   await writeFile(filePath, nextHtml, "utf8");

@@ -7,12 +7,10 @@
   <style>
     :root {
       --primary: #0066cc;
-      --primary-dark: #2997ff;
       --ink: #1d1d1f;
       --ink-muted: #333333;
       --muted: #7a7a7a;
       --hairline: #e0e0e0;
-      --divider: #f0f0f0;
       --canvas: #ffffff;
       --parchment: #f5f5f7;
       --surface: #fafafc;
@@ -363,16 +361,6 @@
 
     .handoff-card p { font-size: 14px; }
 
-    .footer {
-      background: var(--parchment);
-      padding: 38px 24px;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.5;
-      letter-spacing: -0.12px;
-      text-align: center;
-    }
-
     @media (max-width: 1120px) {
       .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .handoff-row { grid-template-columns: repeat(2, 1fr); }
@@ -460,7 +448,7 @@
 <!-- zukai-head-meta:end -->
 </head>
 <body>
-  <nav class="site-chrome-nav" aria-label="サイト">
+  <nav class="site-chrome-nav site-chrome-bar" aria-label="サイト">
     <div class="site-chrome-nav-inner">
       <a href="../index.html">← 図解ギャラリー</a>
       <a href="https://tech.algomatic.jp/entry/2026/06/12/153036">元記事を読む</a>
@@ -583,7 +571,7 @@
       </div>
     </section>
 
-    <section class="section parchment" aria-label="図解ブリーフの受け渡し">
+    <section class="section" aria-label="図解ブリーフの受け渡し">
       <article class="handoff">
         <span class="pill">Diagram Brief</span>
         <h2>完成画像ではなく、レビューできる設計意図を渡す。</h2>

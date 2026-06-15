@@ -12,18 +12,19 @@
 2. 生成スクリプトを実行する
 
 ```bash
-node tmp/backfill-articles.mjs
-node tmp/generate-manifest.mjs
-node tmp/verify-meta.mjs
+node scripts/backfill-articles.mjs
+node scripts/sync-chrome.mjs
+node scripts/generate-manifest.mjs
+node scripts/verify-meta.mjs
 ```
 
-`backfill-articles.mjs` は nav・footer・`site-chrome.css` に加え、`index.html` と各記事の OGP・Twitter Card・canonical・JSON-LD を `<!-- zukai-head-meta -->` ブロックとして同期します。
+`backfill-articles.mjs` は `zukai:published` と head meta（OGP・Twitter Card・canonical・JSON-LD）のみ同期します。ヘッダー・フッター・`site-chrome.css` リンクは `sync-chrome.mjs` が `scripts/chrome-templates.mjs` から注入します。
 
-OG 画像や apple-touch-icon の SVG 原稿を編集した場合は `node tmp/generate-assets.mjs` で PNG を再生成します（macOS の `qlmanage` / `sips` が必要）。
+OG 画像や apple-touch-icon の SVG 原稿を編集した場合は `node scripts/generate-assets.mjs` で PNG を再生成します（macOS の `qlmanage` / `sips` が必要）。
 
 3. `manifest.json` の diff を確認して commit / push する
 
-初回追加時は `backfill-articles.mjs` が nav・footer・`site-chrome.css` リンクを自動挿入します。公開日 meta が既にある場合はその値を優先します。
+初回追加時は `backfill-articles.mjs` で meta を同期し、続けて `sync-chrome.mjs` で chrome を注入します。公開日 meta が既にある場合はその値を優先します。
 
 ## GitHub Pages の有効化
 
@@ -38,7 +39,7 @@ OG 画像や apple-touch-icon の SVG 原稿を編集した場合は `node tmp/g
 ```text
 index.html              図解一覧（固定シェル）
 manifest.json           図解メタデータ（生成物）
-assets/site-chrome.css  共通 nav / footer / 一覧スタイル
+assets/site-chrome.css  共通 chrome（ヘッダー bar / footer / 一覧スタイル）
 assets/favicon.svg      サイト favicon（図解ノードマーク）
 assets/apple-touch-icon.svg
 assets/apple-touch-icon.png

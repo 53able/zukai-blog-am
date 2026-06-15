@@ -1,6 +1,6 @@
 /**
  * Shared site metadata for OGP, SEO, and JSON-LD.
- * Run via: node tmp/backfill-articles.mjs
+ * Run via: node scripts/backfill-articles.mjs
  */
 
 /** @type {const} */
