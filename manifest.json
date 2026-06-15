@@ -1,6 +1,14 @@
 {
   "entries": [
     {
+      "title": "信頼されるAIは、半歩だけ先にいる",
+      "publishedAt": "2026-06-15",
+      "htmlPath": "articles/zukai-hanposaki-ux-apple.html",
+      "sourceUrl": "https://tech.algomatic.jp/entry/2026-06/hanposaki-ux",
+      "sourceTitle": "「そうそう、わかってるな」と信頼されるAIエージェントを作りたい ── 半歩先の体験設計の話",
+      "lead": "全部を勝手にやるでも、毎回許可を取るでもない。業務の流れに合わせて、黙ってやる場所とひと言聞く場所を設計します。"
+    },
+    {
       "title": "図解は、描く前に決まる",
       "publishedAt": "2026-06-12",
       "htmlPath": "articles/zukai-creator-apple.html",
