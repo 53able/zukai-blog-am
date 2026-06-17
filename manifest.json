@@ -1,6 +1,14 @@
 {
   "entries": [
     {
+      "title": "Fusionは、多数決ではない",
+      "publishedAt": "2026-06-17",
+      "htmlPath": "articles/zukai-cc-fusion-apple.html",
+      "sourceUrl": "https://tech.algomatic.jp/entry/advent-calendar/2026-06/cc-fusion",
+      "sourceTitle": "OpenRouterのFusionの考え方をClaude Codeに取り入れてみた",
+      "lead": "複数モデルの答えを混ぜるのではなく、Panelの回答をJudgeが比較し、抜けと独自案を拾って最終回答へ統合する。"
+    },
+    {
       "title": "HRは、意思決定システムへ",
       "publishedAt": "2026-06-16",
       "htmlPath": "articles/zukai-hr2030-apple.html",
