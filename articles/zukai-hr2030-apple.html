@@ -1,0 +1,757 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HRは、意思決定システムへ</title>
+  <style>
+    :root {
+      --primary: #0066cc;
+      --primary-dark: #2997ff;
+      --ink: #1d1d1f;
+      --ink-muted: #333333;
+      --muted: #7a7a7a;
+      --hairline: #e0e0e0;
+      --divider: #f0f0f0;
+      --canvas: #ffffff;
+      --parchment: #f5f5f7;
+      --dark-1: #272729;
+      --dark-2: #2a2a2c;
+      --dark-3: #252527;
+      --white: #ffffff;
+      --radius-lg: 18px;
+      --radius-pill: 9999px;
+      --font-display: "SF Pro Display", system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+      --font-text: "SF Pro Text", system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: var(--font-text);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+    }
+
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .hero {
+      min-height: 50vh;
+      display: grid;
+      place-items: center;
+      padding: 92px 24px 76px;
+      text-align: center;
+      background: var(--canvas);
+    }
+
+    .hero-inner { max-width: 1040px; }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 18px;
+      color: var(--primary);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+    }
+
+    .kicker-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+
+    h1 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(42px, 5.4vw, 72px);
+      font-weight: 600;
+      line-height: 1.05;
+      letter-spacing: -0.56px;
+      text-wrap: balance;
+    }
+
+    .lead {
+      max-width: 920px;
+      margin: 24px auto 0;
+      color: var(--ink-muted);
+      font-family: var(--font-display);
+      font-size: clamp(21px, 2.4vw, 28px);
+      font-weight: 400;
+      line-height: 1.25;
+      letter-spacing: 0.196px;
+      text-wrap: pretty;
+    }
+
+    .source-note {
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.43;
+      letter-spacing: -0.224px;
+    }
+
+    .section {
+      padding: 86px 24px 94px;
+      background: var(--canvas);
+    }
+
+    .section.parchment { background: var(--parchment); }
+    .section.dark { background: var(--dark-1); color: var(--white); }
+    .section.dark-2 { background: var(--dark-2); color: var(--white); }
+
+    .section-head {
+      max-width: 980px;
+      margin: 0 auto 44px;
+      text-align: center;
+    }
+
+    h2 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(34px, 3.2vw, 48px);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.28px;
+      text-wrap: balance;
+    }
+
+    .section-head p {
+      max-width: 840px;
+      margin: 16px auto 0;
+      color: var(--ink-muted);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+      text-wrap: pretty;
+    }
+
+    .dark .section-head p,
+    .dark-2 .section-head p {
+      color: #cccccc;
+    }
+
+    .pill {
+      display: inline-flex;
+      width: fit-content;
+      padding: 8px 15px;
+      border-radius: var(--radius-pill);
+      background: var(--primary);
+      color: var(--white);
+      font-size: 14px;
+      line-height: 1.29;
+      letter-spacing: -0.224px;
+    }
+
+    .map {
+      max-width: 1240px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns:
+        minmax(220px, 1fr)
+        48px
+        minmax(260px, 1.08fr)
+        48px
+        minmax(220px, 1fr);
+      gap: 18px;
+      align-items: center;
+    }
+
+    .map-card,
+    .data-card,
+    .risk-card,
+    .scenario-card,
+    .trust-card {
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-lg);
+      background: var(--canvas);
+      color: var(--ink);
+      padding: 30px;
+    }
+
+    .map-card {
+      min-width: 0;
+      min-height: 300px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .map-card.engine {
+      background: var(--dark-3);
+      color: var(--white);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .map-card h3,
+    .data-card h3,
+    .risk-card h3,
+    .scenario-card h3,
+    .trust-card h3 {
+      margin: 20px 0 12px;
+      font-family: var(--font-display);
+      font-size: clamp(27px, 2.4vw, 36px);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.28px;
+      text-wrap: pretty;
+    }
+
+    .map-card p,
+    .data-card p,
+    .risk-card p,
+    .scenario-card p,
+    .trust-card p {
+      margin: 0;
+      color: var(--ink-muted);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+    }
+
+    .engine p { color: #cccccc; }
+
+    .stack {
+      display: grid;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    .stack span {
+      display: block;
+      border-radius: 12px;
+      background: var(--parchment);
+      padding: 12px 14px;
+      color: var(--ink-muted);
+      font-size: 14px;
+      line-height: 1.29;
+      letter-spacing: -0.224px;
+    }
+
+    .engine .stack span {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--white);
+    }
+
+    .arrow {
+      display: grid;
+      place-items: center;
+      justify-self: center;
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-pill);
+      background: rgba(0, 102, 204, 0.12);
+      color: var(--primary);
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .data-grid {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .data-card {
+      min-height: 250px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .data-card .index,
+    .risk-card .index,
+    .scenario-card .index,
+    .trust-card .index {
+      color: var(--primary);
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.29;
+      letter-spacing: -0.224px;
+    }
+
+    .risk-lane {
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+
+    .risk-axis {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 18px;
+      color: #cccccc;
+      font-size: 13px;
+      line-height: 1.3;
+      letter-spacing: -0.12px;
+    }
+
+    .risk-line {
+      position: relative;
+      height: 4px;
+      margin: 0 10px 24px 0;
+      border-radius: var(--radius-pill);
+      background: var(--primary);
+    }
+
+    .risk-line::after {
+      content: "";
+      position: absolute;
+      right: -10px;
+      top: 50%;
+      width: 0;
+      height: 0;
+      border-top: 7px solid transparent;
+      border-bottom: 7px solid transparent;
+      border-left: 11px solid var(--primary);
+      transform: translateY(-50%);
+    }
+
+    .risk-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .risk-card {
+      min-height: 280px;
+      background: rgba(255, 255, 255, 0.96);
+    }
+
+    .scenario {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .constraint-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .constraint-list span {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1px solid var(--divider);
+      padding: 12px 0;
+      color: var(--ink-muted);
+      font-size: 14px;
+      line-height: 1.29;
+      letter-spacing: -0.224px;
+    }
+
+    .scenario-canvas {
+      border-radius: var(--radius-lg);
+      background: var(--canvas);
+      border: 1px solid var(--hairline);
+      padding: 30px;
+    }
+
+    .scenario-flow {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .scenario-card {
+      min-height: 230px;
+      background: var(--parchment);
+    }
+
+    .scenario-card.final {
+      background: var(--dark-3);
+      color: var(--white);
+      border-color: var(--dark-3);
+    }
+
+    .scenario-card.final p { color: #cccccc; }
+
+    .trust-wrap {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .trust-card {
+      min-height: 290px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: var(--dark-3);
+      color: var(--white);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .trust-card p { color: #cccccc; }
+
+    .trust-card.answer {
+      background: var(--canvas);
+      color: var(--ink);
+      border-color: var(--hairline);
+    }
+
+    .trust-card.answer p { color: var(--ink-muted); }
+
+    .conclusion {
+      max-width: 980px;
+      margin: 0 auto;
+      border-radius: 28px;
+      background: var(--dark-2);
+      color: var(--white);
+      padding: clamp(34px, 5vw, 64px);
+      text-align: center;
+    }
+
+    .conclusion h2 { margin-top: 18px; }
+
+    .conclusion p {
+      max-width: 760px;
+      margin: 22px auto 0;
+      color: #cccccc;
+      font-size: 18px;
+      line-height: 1.55;
+      letter-spacing: -0.374px;
+      text-wrap: pretty;
+    }
+
+    .footer {
+      padding: 56px 24px;
+      background: var(--parchment);
+      color: var(--muted);
+      text-align: center;
+      font-size: 12px;
+      line-height: 1.5;
+      letter-spacing: -0.12px;
+    }
+
+    @media (max-width: 900px) {
+      .map,
+      .scenario {
+        grid-template-columns: 1fr;
+      }
+
+      .arrow {
+        margin: -2px auto;
+        transform: rotate(90deg);
+      }
+
+      .data-grid,
+      .risk-grid,
+      .trust-wrap,
+      .scenario-flow {
+        grid-template-columns: 1fr;
+      }
+
+      .risk-axis { display: none; }
+    }
+
+    @media (max-width: 640px) {
+      .hero { padding: 72px 20px 58px; }
+      .section { padding: 64px 20px 72px; }
+      .map-card,
+      .data-card,
+      .risk-card,
+      .scenario-card,
+      .trust-card,
+      .scenario-canvas {
+        padding: 24px;
+      }
+    }
+  </style>
+  <meta name="zukai:published" content="2026-06-16" />
+
+  <!-- zukai-head-meta:start -->
+  <meta name="description" content="エージェンティックHRの本体は、チャットボットではありません。コンテキスト、データ品質、権限設計、信頼形成をつなぐ新しい業務システムです。" />
+  <meta name="author" content="Go (@53able)" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://53able.github.io/zukai-blog-am/articles/zukai-hr2030-apple.html" />
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png" />
+  <meta name="theme-color" content="#0066cc" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Algomatic Tech Blog 図解ギャラリー" />
+  <meta property="og:locale" content="ja_JP" />
+  <meta property="og:title" content="HRは、意思決定システムへ" />
+  <meta property="og:description" content="エージェンティックHRの本体は、チャットボットではありません。コンテキスト、データ品質、権限設計、信頼形成をつなぐ新しい業務システムです。" />
+  <meta property="og:url" content="https://53able.github.io/zukai-blog-am/articles/zukai-hr2030-apple.html" />
+  <meta property="og:image" content="https://53able.github.io/zukai-blog-am/assets/og-default.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="HRは、意思決定システムへ" />
+  <meta property="article:published_time" content="2026-06-16T00:00:00+09:00" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="HRは、意思決定システムへ" />
+  <meta name="twitter:description" content="エージェンティックHRの本体は、チャットボットではありません。コンテキスト、データ品質、権限設計、信頼形成をつなぐ新しい業務システムです。" />
+  <meta name="twitter:image" content="https://53able.github.io/zukai-blog-am/assets/og-default.png" />
+  <meta name="twitter:image:alt" content="HRは、意思決定システムへ" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "HRは、意思決定システムへ",
+  "description": "エージェンティックHRの本体は、チャットボットではありません。コンテキスト、データ品質、権限設計、信頼形成をつなぐ新しい業務システムです。",
+  "datePublished": "2026-06-16T00:00:00+09:00",
+  "author": {
+    "@type": "Person",
+    "name": "Go (@53able)"
+  },
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "Algomatic Tech Blog 図解ギャラリー",
+    "url": "https://53able.github.io/zukai-blog-am/"
+  },
+  "mainEntityOfPage": "https://53able.github.io/zukai-blog-am/articles/zukai-hr2030-apple.html",
+  "image": [
+    "https://53able.github.io/zukai-blog-am/assets/og-default.png"
+  ],
+  "inLanguage": "ja"
+}
+  </script>
+<!-- zukai-head-meta:end -->
+  <link rel="stylesheet" href="../assets/site-chrome.css" />
+</head>
+<body>
+  <nav class="site-chrome-nav site-chrome-bar" aria-label="サイト">
+    <div class="site-chrome-nav-inner">
+      <a href="../index.html">← 図解ギャラリー</a>
+      <a href="https://tech.algomatic.jp/entry/advent-calendar/2026-06/ai-project-hr2030">元記事を読む</a>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero" aria-label="導入">
+      <div class="hero-inner">
+        <div class="kicker"><span class="kicker-dot"></span>Agentic HR Vision</div>
+        <h1>HRは、記録するシステムから<br />意思決定するシステムへ。</h1>
+        <p class="lead">エージェンティックHRの本体は、チャットボットではありません。コンテキスト、データ品質、権限設計、信頼形成をつなぐ新しい業務システムです。</p>
+        <p class="source-note">Source: <a href="https://tech.algomatic.jp/entry/advent-calendar/2026-06/ai-project-hr2030">「HR 2030: The Agentic HR Vision」を読んで 〜エージェント時代のHRと組織を考察する〜</a></p>
+      </div>
+    </section>
+
+    <section class="section dark" aria-label="コンテキストエンジン">
+      <div class="section-head">
+        <h2>エージェントの賢さは、<br />モデルよりコンテキストで決まる。</h2>
+        <p>企業のルールは、業務システム、文書、運用慣行の中に散らばっています。まず必要なのは、それをエージェントが使える意味へ変換する中核です。</p>
+      </div>
+
+      <div class="map">
+        <article class="map-card">
+          <div>
+            <span class="pill">Source</span>
+            <h3>既存HRシステム群</h3>
+            <p>HCM、ERP、CRM、ATS、LMS、ドキュメント、現場の運用慣行。</p>
+          </div>
+          <div class="stack">
+            <span>ポリシー</span>
+            <span>ビジネスルール</span>
+            <span>例外処理</span>
+          </div>
+        </article>
+        <div class="arrow" aria-hidden="true">&rarr;</div>
+        <article class="map-card engine">
+          <div>
+            <span class="pill">Core</span>
+            <h3>コンテキストエンジン</h3>
+            <p>散らばったセマンティクスを抽出し、エージェントが判断に使える形へ整える。</p>
+          </div>
+          <div class="stack">
+            <span>ルールを読む</span>
+            <span>意味をそろえる</span>
+            <span>判断材料にする</span>
+          </div>
+        </article>
+        <div class="arrow" aria-hidden="true">&rarr;</div>
+        <article class="map-card">
+          <div>
+            <span class="pill">Action</span>
+            <h3>HRエージェント</h3>
+            <p>問い合わせ、採用、配置、育成、評価を、統制された文脈の上で支援する。</p>
+          </div>
+          <div class="stack">
+            <span>答える</span>
+            <span>提案する</span>
+            <span>引き継ぐ</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section parchment" aria-label="データ基盤">
+      <div class="section-head">
+        <h2>派手なUIの下には、地味なデータ工事がある。</h2>
+        <p>記事が指摘する成功条件は、エージェントの見た目ではなくデータ基盤です。品質が弱いまま自律性だけを足すと、判断の土台が揺れます。</p>
+      </div>
+
+      <div class="data-grid">
+        <article class="data-card">
+          <span class="index">01</span>
+          <div>
+            <h3>統合</h3>
+            <p>散在するHRデータと業務データを、同じ問いに答えられる場所へ集める。</p>
+          </div>
+        </article>
+        <article class="data-card">
+          <span class="index">02</span>
+          <div>
+            <h3>品質</h3>
+            <p>欠損、古い情報、曖昧な定義を放置せず、判断に使える水準へ保つ。</p>
+          </div>
+        </article>
+        <article class="data-card">
+          <span class="index">03</span>
+          <div>
+            <h3>ラベリング</h3>
+            <p>スキル、役割、ポリシー、例外を、機械が扱える意味単位へ分ける。</p>
+          </div>
+        </article>
+        <article class="data-card">
+          <span class="index">04</span>
+          <div>
+            <h3>ガバナンス</h3>
+            <p>誰が、どのデータを、どの目的で使えるかを継続的に管理する。</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section dark-2" aria-label="リスクベースの自律性">
+      <div class="section-head">
+        <h2>自律性は、リスクで濃淡をつける。</h2>
+        <p>すべてに承認を挟むと遅い。すべてを自律化すると危ない。だから、可逆性と人への影響でエージェントの権限を分けます。</p>
+      </div>
+
+      <div class="risk-lane">
+        <div class="risk-axis" aria-hidden="true">
+          <span>低リスク</span>
+          <span>中リスク</span>
+          <span>高リスク</span>
+        </div>
+        <div class="risk-line" aria-hidden="true"></div>
+        <div class="risk-grid">
+          <article class="risk-card">
+            <span class="index">Autonomous</span>
+            <h3>スケジューリング</h3>
+            <p>可逆で影響範囲が小さい操作は、エージェントが自律的に処理する。</p>
+          </article>
+          <article class="risk-card">
+            <span class="index">Escalate</span>
+            <h3>問い合わせ対応</h3>
+            <p>定型はAIが処理し、複雑なケースは人間のHRアドバイザーへ渡す。</p>
+          </article>
+          <article class="risk-card">
+            <span class="index">Approve</span>
+            <h3>給与・報酬</h3>
+            <p>処遇に関わる不可逆な判断は、Human-in-the-Loopを必須にする。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section parchment" aria-label="ワークフォース再配置">
+      <div class="section-head">
+        <h2>人材配置は、定期イベントから継続的なwhat-if分析へ。</h2>
+        <p>組織の組閣や再配置は、年に数回の調整ではなくなります。事業制約、スキル、本人希望を入れて、複数シナリオを比較するプロセスになります。</p>
+      </div>
+
+      <div class="scenario">
+        <article class="map-card">
+          <div>
+            <span class="pill">Constraints</span>
+            <h3>配置は組み合わせ最適化問題。</h3>
+            <p>LLMに丸投げしても解けません。制約を構造化し、シミュレーション基盤と組み合わせます。</p>
+          </div>
+          <div class="constraint-list">
+            <span><strong>事業制約</strong> 計画未達、コスト削減</span>
+            <span><strong>組織制約</strong> 必要人数、部署の役割</span>
+            <span><strong>人材制約</strong> スキル、希望、組織の記憶</span>
+          </div>
+        </article>
+
+        <div class="scenario-canvas">
+          <span class="pill">Simulation Flow</span>
+          <div class="scenario-flow">
+            <article class="scenario-card">
+              <span class="index">Input</span>
+              <h3>制約を入れる</h3>
+              <p>タスク、スキル、人数、本人希望を構造化する。</p>
+            </article>
+            <article class="scenario-card">
+              <span class="index">Model</span>
+              <h3>案を比べる</h3>
+              <p>再配置、給与調整、レイオフなど複数案を見る。</p>
+            </article>
+            <article class="scenario-card final">
+              <span class="index">Decision</span>
+              <h3>経営が選ぶ</h3>
+              <p>what-if分析で、影響を見ながら意思決定する。</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section dark" aria-label="監視と信頼">
+      <div class="section-head">
+        <h2>監視の問題は、技術だけでは解けない。</h2>
+        <p>メール、会議、ワークフローを分析できるようになるほど、問うべきことは「できるか」ではなく「何のために使うか」になります。</p>
+      </div>
+
+      <div class="trust-wrap">
+        <article class="trust-card">
+          <span class="index">Observe</span>
+          <div>
+            <h3>働き方のデータ</h3>
+            <p>メール、会議、業務フローから、行動や関係性の文脈が見える。</p>
+          </div>
+        </article>
+        <article class="trust-card">
+          <span class="index">Question</span>
+          <div>
+            <h3>評価に使うのか</h3>
+            <p>給与や配置に使うなら、便利さより先に透明性が必要になる。</p>
+          </div>
+        </article>
+        <article class="trust-card answer">
+          <span class="index">Agreement</span>
+          <div>
+            <h3>合意を作る</h3>
+            <p>アクセス制御や匿名化だけでなく、目的と境界を明確に伝える。</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" aria-label="結論">
+      <article class="conclusion">
+        <span class="pill">Conclusion</span>
+        <h2>エージェンティックHRの勝負所は、エージェントの裏側にある。</h2>
+        <p>コンテキスト、データ品質、権限設計、信頼形成。この4つが揃って初めて、HRは記録のためのシステムから、組織の意思決定を駆動するシステムへ変わります。</p>
+      </article>
+    </section>
+
+    <footer class="footer site-chrome-footer">
+      <p>Algomatic Tech Blog の記事を zukai-creator で再構成した非公式図解です。</p>
+      <p>© 図解構成: Go (@53able) · Designed with Apple-style tokens</p>
+    </footer>
+  </main>
+</body>
+</html>
