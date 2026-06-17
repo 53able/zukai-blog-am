@@ -44,16 +44,24 @@ const replaceChromeFooter = (html) =>
  * @param {string} html
  * @returns {string}
  */
-const upsertIndexHeader = (html) => {
-  if (html.includes('class="gallery-topbar"')) {
-    return html.replace(
-      /<header class="gallery-topbar[^"]*"[\s\S]*?<\/header>/,
-      INDEX_HEADER_HTML,
-    );
-  }
+const removeIndexHeaders = (html) =>
+  html.replace(/\n?\s*<header class="gallery-topbar[^"]*"[\s\S]*?<\/header>\s*/g, "\n  ");
 
-  return html.replace(/<body([^>]*)>/, `<body$1>\n  ${INDEX_HEADER_HTML}\n`);
+/**
+ * @param {string} html
+ * @returns {string}
+ */
+const upsertIndexHeader = (html) => {
+  const withoutHeaders = removeIndexHeaders(html);
+  return withoutHeaders.replace(/<body([^>]*)>/, `<body$1>\n  ${INDEX_HEADER_HTML}`);
 };
+
+/**
+ * @param {string} html
+ * @returns {string}
+ */
+const removeArticleHeaders = (html) =>
+  html.replace(/\n?\s*<nav class="site-chrome-nav[^"]*"[\s\S]*?<\/nav>\s*/g, "\n  ");
 
 /**
  * @param {string} html
@@ -62,12 +70,8 @@ const upsertIndexHeader = (html) => {
  */
 const upsertArticleHeader = (html, sourceUrl) => {
   const headerHtml = buildArticleHeaderHtml(sourceUrl);
-
-  if (html.includes('class="site-chrome-nav"')) {
-    return html.replace(/<nav class="site-chrome-nav[^"]*"[\s\S]*?<\/nav>/, headerHtml);
-  }
-
-  return html.replace("<body>", `<body>\n  ${headerHtml}\n`);
+  const withoutHeaders = removeArticleHeaders(html);
+  return withoutHeaders.replace(/<body([^>]*)>/, `<body$1>\n  ${headerHtml}\n`);
 };
 
 /**

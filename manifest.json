@@ -1,12 +1,20 @@
 {
   "entries": [
     {
+      "title": "HRは、意思決定システムへ",
+      "publishedAt": "2026-06-16",
+      "htmlPath": "articles/zukai-hr2030-apple.html",
+      "sourceUrl": "https://tech.algomatic.jp/entry/advent-calendar/2026-06/ai-project-hr2030",
+      "sourceTitle": "「HR 2030: The Agentic HR Vision」を読んで 〜エージェント時代のHRと組織を考察する〜",
+      "lead": "エージェンティックHRの本体は、チャットボットではありません。コンテキスト、データ品質、権限設計、信頼形成をつなぐ新しい業務システムです。"
+    },
+    {
       "title": "信頼されるAIは、半歩だけ先にいる",
       "publishedAt": "2026-06-15",
       "htmlPath": "articles/zukai-hanposaki-ux-apple.html",
       "sourceUrl": "https://tech.algomatic.jp/entry/2026-06/hanposaki-ux",
       "sourceTitle": "「そうそう、わかってるな」と信頼されるAIエージェントを作りたい ── 半歩先の体験設計の話",
-      "lead": "全部を勝手にやるでも、毎回許可を取るでもない。業務の流れに合わせて、黙ってやる場所とひと言聞く場所を設計します。"
+      "lead": "全部を勝手にやるでも、毎回許可を取るでもない。業務の流れに合わせて、黙ってやる場所とひと言聞く場所を設計する。"
     },
     {
       "title": "図解は、描く前に決まる",
