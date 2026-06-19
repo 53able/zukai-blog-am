@@ -1,6 +1,22 @@
 {
   "entries": [
     {
+      "title": "AIエージェントは、爆死して実用化した",
+      "publishedAt": "2026-06-19",
+      "htmlPath": "articles/zukai-ai-agents-history-apple.html",
+      "sourceUrl": "https://tech.algomatic.jp/entry/four-years-of-ai-agents",
+      "sourceTitle": "AIエージェント4年史",
+      "lead": "2022年の原型、2023年の熱狂、2023〜2024年の幻滅、そして2024年後半からの実用化を、技術と設計思想の転換点として読む。"
+    },
+    {
+      "title": "AIエージェント研究は、運用設計へ",
+      "publishedAt": "2026-06-18",
+      "htmlPath": "articles/zukai-ai-agent-research-apple.html",
+      "sourceUrl": "https://tech.algomatic.jp/entry/ai-agent-research-trends",
+      "sourceTitle": "Algomatic AIラボの論文解説から振り返る、AIエージェント研究の変化",
+      "lead": "能力拡張から、仕事をさせる設計へ。さらに、安全に、再現性高く、検証可能に働かせる設計へ。"
+    },
+    {
       "title": "Fusionは、多数決ではない",
       "publishedAt": "2026-06-17",
       "htmlPath": "articles/zukai-cc-fusion-apple.html",

@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AIエージェントは、爆死して実用化した</title>
+  <meta name="zukai:published" content="2026-06-19" />
+  <style>
+    :root {
+      --primary: #0066cc;
+      --primary-dark: #2997ff;
+      --ink: #1d1d1f;
+      --ink-muted: #333333;
+      --muted: #7a7a7a;
+      --hairline: #e0e0e0;
+      --canvas: #ffffff;
+      --parchment: #f5f5f7;
+      --surface: #fafafc;
+      --dark-1: #272729;
+      --dark-2: #2a2a2c;
+      --dark-3: #252527;
+      --white: #ffffff;
+      --radius-lg: 18px;
+      --radius-pill: 9999px;
+      --font-display: "SF Pro Display", system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+      --font-text: "SF Pro Text", system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: var(--font-text);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+    }
+
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .hero {
+      min-height: 54vh;
+      display: grid;
+      place-items: center;
+      padding: 96px 24px 80px;
+      text-align: center;
+      background: var(--canvas);
+    }
+
+    .hero-inner { max-width: 1080px; }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 18px;
+      color: var(--primary);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+    }
+
+    .kicker-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+
+    h1 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(42px, 5.4vw, 72px);
+      font-weight: 600;
+      line-height: 1.05;
+      letter-spacing: -0.56px;
+      text-wrap: balance;
+    }
+
+    .lead {
+      max-width: 940px;
+      margin: 24px auto 0;
+      color: var(--ink-muted);
+      font-family: var(--font-display);
+      font-size: clamp(21px, 2.4vw, 28px);
+      font-weight: 400;
+      line-height: 1.25;
+      letter-spacing: 0.196px;
+      text-wrap: pretty;
+    }
+
+    .source-note {
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.43;
+      letter-spacing: -0.224px;
+    }
+
+    .section {
+      padding: 86px 24px 94px;
+      background: var(--canvas);
+    }
+
+    .section.parchment { background: var(--parchment); }
+    .section.dark { background: var(--dark-1); color: var(--white); }
+
+    .section-head {
+      max-width: 980px;
+      margin: 0 auto 44px;
+      text-align: center;
+    }
+
+    h2 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(34px, 3.2vw, 48px);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.28px;
+      text-wrap: balance;
+    }
+
+    .section-head p {
+      max-width: 820px;
+      margin: 16px auto 0;
+      color: var(--ink-muted);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+      text-wrap: pretty;
+    }
+
+    .dark .section-head p { color: #cccccc; }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      padding: 8px 15px;
+      border-radius: var(--radius-pill);
+      background: var(--primary);
+      color: var(--white);
+      font-size: 14px;
+      line-height: 1.29;
+      letter-spacing: -0.224px;
+      white-space: nowrap;
+    }
+
+    .history-line {
+      max-width: 1280px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      position: relative;
+    }
+
+    .history-line::before {
+      content: "";
+      position: absolute;
+      top: 46px;
+      left: 12%;
+      right: 12%;
+      height: 1px;
+      background: var(--hairline);
+    }
+
+    .era-card,
+    .turn-card,
+    .factor-card,
+    .future-card {
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-lg);
+      background: var(--canvas);
+      color: var(--ink);
+      padding: 28px;
+    }
+
+    .era-card {
+      min-height: 320px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      z-index: 1;
+    }
+
+    .era-year {
+      display: inline-flex;
+      width: fit-content;
+      padding: 9px 16px;
+      border-radius: var(--radius-pill);
+      background: var(--dark-1);
+      color: var(--white);
+      font-size: 14px;
+      line-height: 1.29;
+      letter-spacing: -0.224px;
+    }
+
+    .era-card h3,
+    .turn-card h3,
+    .factor-card h3,
+    .future-card h3 {
+      margin: 22px 0 12px;
+      font-family: var(--font-display);
+      font-size: clamp(26px, 2.35vw, 36px);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.28px;
+      text-wrap: pretty;
+    }
+
+    .era-card p,
+    .turn-card p,
+    .factor-card p,
+    .future-card p {
+      margin: 0;
+      color: var(--ink-muted);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+      text-wrap: pretty;
+    }
+
+    .mini-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 22px;
+    }
+
+    .mini-list span {
+      display: inline-flex;
+      width: fit-content;
+      border: 1px solid var(--hairline);
+      border-radius: var(--radius-pill);
+      padding: 7px 12px;
+      background: var(--surface);
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.29;
+      letter-spacing: -0.224px;
+    }
+
+    .turn-grid {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .turn-card {
+      min-height: 300px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .turn-card.negative {
+      background: var(--dark-2);
+      color: var(--white);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .turn-card.negative p { color: #cccccc; }
+
+    .factor-grid {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .factor-card {
+      min-height: 250px;
+      padding: 24px;
+    }
+
+    .factor-card h3 {
+      margin-top: 18px;
+      font-size: clamp(24px, 2vw, 32px);
+    }
+
+    .factor-number {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--primary);
+      color: var(--white);
+      font-family: var(--font-display);
+      font-size: 19px;
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .future-wrap {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    .future-card {
+      background: transparent;
+      border-color: rgba(255, 255, 255, 0.14);
+      color: var(--white);
+      text-align: center;
+      padding: clamp(36px, 6vw, 72px);
+    }
+
+    .future-card h2 {
+      font-size: clamp(38px, 4.8vw, 64px);
+    }
+
+    .future-card p {
+      max-width: 760px;
+      margin: 18px auto 0;
+      color: #cccccc;
+    }
+
+    .future-card a { color: var(--primary-dark); }
+
+    @media (max-width: 1068px) {
+      .history-line,
+      .factor-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .history-line::before { display: none; }
+    }
+
+    @media (max-width: 820px) {
+      .history-line,
+      .turn-grid,
+      .factor-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .era-card,
+      .turn-card,
+      .factor-card {
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .hero { padding: 82px 20px 64px; }
+      .section { padding: 64px 20px 70px; }
+      .era-card,
+      .turn-card,
+      .factor-card,
+      .future-card { padding: 24px; }
+    }
+  </style>
+
+  <!-- zukai-head-meta:start -->
+  <meta name="description" content="2022年の原型、2023年の熱狂、2023〜2024年の幻滅、そして2024年後半からの実用化を、技術と設計思想の転換点として読む。" />
+  <meta name="author" content="Go (@53able)" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://53able.github.io/zukai-blog-am/articles/zukai-ai-agents-history-apple.html" />
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png" />
+  <meta name="theme-color" content="#0066cc" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Algomatic Tech Blog 図解ギャラリー" />
+  <meta property="og:locale" content="ja_JP" />
+  <meta property="og:title" content="AIエージェントは、爆死して実用化した" />
+  <meta property="og:description" content="2022年の原型、2023年の熱狂、2023〜2024年の幻滅、そして2024年後半からの実用化を、技術と設計思想の転換点として読む。" />
+  <meta property="og:url" content="https://53able.github.io/zukai-blog-am/articles/zukai-ai-agents-history-apple.html" />
+  <meta property="og:image" content="https://53able.github.io/zukai-blog-am/assets/og-default.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="AIエージェントは、爆死して実用化した" />
+  <meta property="article:published_time" content="2026-06-19T00:00:00+09:00" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="AIエージェントは、爆死して実用化した" />
+  <meta name="twitter:description" content="2022年の原型、2023年の熱狂、2023〜2024年の幻滅、そして2024年後半からの実用化を、技術と設計思想の転換点として読む。" />
+  <meta name="twitter:image" content="https://53able.github.io/zukai-blog-am/assets/og-default.png" />
+  <meta name="twitter:image:alt" content="AIエージェントは、爆死して実用化した" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "AIエージェントは、爆死して実用化した",
+  "description": "2022年の原型、2023年の熱狂、2023〜2024年の幻滅、そして2024年後半からの実用化を、技術と設計思想の転換点として読む。",
+  "datePublished": "2026-06-19T00:00:00+09:00",
+  "author": {
+    "@type": "Person",
+    "name": "Go (@53able)"
+  },
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "Algomatic Tech Blog 図解ギャラリー",
+    "url": "https://53able.github.io/zukai-blog-am/"
+  },
+  "mainEntityOfPage": "https://53able.github.io/zukai-blog-am/articles/zukai-ai-agents-history-apple.html",
+  "image": [
+    "https://53able.github.io/zukai-blog-am/assets/og-default.png"
+  ],
+  "inLanguage": "ja"
+}
+  </script>
+<!-- zukai-head-meta:end -->
+  <link rel="stylesheet" href="../assets/site-chrome.css" />
+</head>
+<body>
+  <nav class="site-chrome-nav site-chrome-bar" aria-label="サイト">
+    <div class="site-chrome-nav-inner">
+      <a href="../index.html">← 図解ギャラリー</a>
+      <a href="https://tech.algomatic.jp/entry/four-years-of-ai-agents">元記事を読む</a>
+    </div>
+  </nav>
+
+  <section class="hero" aria-labelledby="title">
+    <div class="hero-inner">
+      <p class="kicker"><span class="kicker-dot" aria-hidden="true"></span>AI Agent History · 2022-2026</p>
+      <h1 id="title">AIエージェントは、<br />爆死して実用化した。</h1>
+      <p class="lead">2022年の原型、2023年の熱狂、2023〜2024年の幻滅、そして2024年後半からの実用化を、技術と設計思想の転換点として読む。</p>
+      <p class="source-note">出典: <a href="https://tech.algomatic.jp/entry/four-years-of-ai-agents">AIエージェント4年史</a></p>
+    </div>
+  </section>
+
+  <main>
+    <section class="section parchment" aria-labelledby="history-title">
+      <div class="section-head">
+        <h2 id="history-title">4年間の流れ</h2>
+        <p>年表の主役は出来事そのものではなく、全自動への期待が、失敗を経て実用的な分業設計へ変わったこと。</p>
+      </div>
+      <div class="history-line">
+        <article class="era-card">
+          <div>
+            <span class="era-year">2022</span>
+            <h3>原型が生まれる</h3>
+            <p>MRKL が道具を使う原型を、ReAct が考えてから動く原型を示した。</p>
+          </div>
+          <div class="mini-list">
+            <span>MRKL</span>
+            <span>ReAct</span>
+          </div>
+        </article>
+        <article class="era-card">
+          <div>
+            <span class="era-year">2023</span>
+            <h3>熱狂する</h3>
+            <p>AutoGPT と BabyAGI が、自律的に動くソフトウェアの光景を作り手に見せた。</p>
+          </div>
+          <div class="mini-list">
+            <span>AutoGPT</span>
+            <span>BabyAGI</span>
+          </div>
+        </article>
+        <article class="era-card">
+          <div>
+            <span class="era-year">2023〜2024</span>
+            <h3>つまずく</h3>
+            <p>無限ループ、ハルシネーション、課金増大、目的逸脱で、全自動丸投げの限界が見えた。</p>
+          </div>
+          <div class="mini-list">
+            <span>無限ループ</span>
+            <span>人間チェック不足</span>
+          </div>
+        </article>
+        <article class="era-card">
+          <div>
+            <span class="era-year">2024後半〜2025</span>
+            <h3>実用化へ進む</h3>
+            <p>領域特化エージェントが、コーディング、ブラウザ操作、リサーチの実務に乗り始めた。</p>
+          </div>
+          <div class="mini-list">
+            <span>Devin</span>
+            <span>Claude Code</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="turn-title">
+      <div class="section-head">
+        <h2 id="turn-title">3つの転換点</h2>
+        <p>この記事の面白さは、ツールや製品名の列挙ではなく、AIエージェントをどう扱うべきかの思想が変わったところにある。</p>
+      </div>
+      <div class="turn-grid">
+        <article class="turn-card">
+          <div>
+            <span class="pill">転換点 1</span>
+            <h3>原型が揃った</h3>
+          </div>
+          <p>Tool Use と推論行動ループが組み合わさり、「考えて道具を使う」ソフトウェアの形が見えた。</p>
+        </article>
+        <article class="turn-card negative">
+          <div>
+            <span class="pill">転換点 2</span>
+            <h3>全自動幻想が崩れた</h3>
+          </div>
+          <p>タスクだけ渡せば全部やる、という設計では暴走や失敗に気づけず、実務に乗らなかった。</p>
+        </article>
+        <article class="turn-card">
+          <div>
+            <span class="pill">転換点 3</span>
+            <h3>実用化の条件が揃った</h3>
+          </div>
+          <p>モデル、文脈長、ツール規格、設計思想が揃い、領域特化エージェントが使える形に近づいた。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section parchment" aria-labelledby="factors-title">
+      <div class="section-head">
+        <h2 id="factors-title">実用化を支えた4要因</h2>
+        <p>2024年後半からの変化は、単一のブレイクスルーではなく、複数の成熟が同時に進んだ結果として整理されている。</p>
+      </div>
+      <div class="factor-grid">
+        <article class="factor-card">
+          <div class="factor-number">1</div>
+          <h3>長いタスクを扱えるモデル</h3>
+          <p>AIが自力でこなせるタスクの長さが伸び、複数手順の仕事を任せやすくなった。</p>
+        </article>
+        <article class="factor-card">
+          <div class="factor-number">2</div>
+          <h3>大きなコンテキスト</h3>
+          <p>途中経過やツール結果を抱えたまま、文脈を失わずに進める余地が広がった。</p>
+        </article>
+        <article class="factor-card">
+          <div class="factor-number">3</div>
+          <h3>ツール利用の規格化</h3>
+          <p>Function Calling や MCP により、外部ツールやデータとの接続が安定した。</p>
+        </article>
+        <article class="factor-card">
+          <div class="factor-number">4</div>
+          <h3>設計思想の成熟</h3>
+          <p>全自動ではなく、人間の確認点と分業を前提にした実装へ変わった。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section dark" aria-labelledby="future-title">
+      <div class="future-wrap">
+        <article class="future-card">
+          <h2 id="future-title">AIエージェントは、<br />名前ではなく機能になる。</h2>
+          <p>あらゆるソフトウェアがエージェント化すると、「AIエージェント」という言葉自体が特別ではなくなるかもしれない。</p>
+          <p><a href="https://tech.algomatic.jp/entry/four-years-of-ai-agents">元記事を読む</a></p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer site-chrome-footer">
+      <p>Algomatic Tech Blog の記事を zukai-creator で再構成した非公式図解です。</p>
+      <p>© 図解構成: Go (@53able) · Designed with Apple-style tokens</p>
+    </footer>
+</body>
+</html>
