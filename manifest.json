@@ -1,6 +1,14 @@
 {
   "entries": [
     {
+      "title": "AIスライドは、編集できてから強い",
+      "publishedAt": "2026-06-23",
+      "htmlPath": "articles/zukai-gog-slides-apple.html",
+      "sourceUrl": "https://tech.algomatic.jp/entry/advent-calendar/2026-06/gog-codex-google-slides",
+      "sourceTitle": "gogとCodexでGoogleスライドを作る",
+      "lead": "完成画像をAIに丸投げするより、後から直せる骨格と画像素材を分けて作るほうが、実務のレビューに耐えます。"
+    },
+    {
       "title": "AI時代の開発は、描き方を選ぶ",
       "publishedAt": "2026-06-22",
       "htmlPath": "articles/zukai-ai-oil-apple.html",
