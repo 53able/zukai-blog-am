@@ -1,20 +1,12 @@
 {
   "entries": [
     {
-      "title": "AIスライドは、編集できてから強い",
-      "publishedAt": "2026-06-23",
-      "htmlPath": "articles/zukai-gog-slides-apple.html",
-      "sourceUrl": "https://tech.algomatic.jp/entry/advent-calendar/2026-06/gog-codex-google-slides",
-      "sourceTitle": "gogとCodexでGoogleスライドを作る",
-      "lead": "完成画像をAIに丸投げするより、後から直せる骨格と画像素材を分けて作るほうが、実務のレビューに耐えます。"
-    },
-    {
-      "title": "AI時代の開発は、描き方を選ぶ",
-      "publishedAt": "2026-06-22",
-      "htmlPath": "articles/zukai-ai-oil-apple.html",
-      "sourceUrl": "https://tech.algomatic.jp/entry/advent-calendar/2026-06/maintainable-ai-generated-code",
-      "sourceTitle": "AI生成コードを保守するために、開発を「水彩」と「油絵」で分ける",
-      "lead": "AIで速く作れるほど、不確実性と影響範囲を見て、水彩的に描き切るか、油絵的に重ねるかを先に決めます。"
+      "title": "Agent followは、Neovimを追従させる",
+      "publishedAt": "2026-06-24",
+      "htmlPath": "articles/zukai-agent-follow-apple.html",
+      "sourceUrl": "https://tech.algomatic.jp/entry/advent-calendar/2026-06/agent-neovim-follow",
+      "sourceTitle": "Claude Code / Codex Hooks と nvim --server で作る terminal-native IDE",
+      "lead": "AI Agent の tool 実行を hook で拾い、helper 経由で nvim --server に渡すと、tmux 上の Neovim が編集箇所を追いかけます。"
     },
     {
       "title": "AIスライドは、編集できてから強い",
