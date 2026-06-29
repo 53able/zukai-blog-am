@@ -1,0 +1,695 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI開発は、防御して速くなる</title>
+  <style>
+    :root {
+      --primary: #0066cc;
+      --primary-dark: #2997ff;
+      --ink: #1d1d1f;
+      --ink-muted: #333333;
+      --muted: #7a7a7a;
+      --hairline: #e0e0e0;
+      --divider: #f0f0f0;
+      --canvas: #ffffff;
+      --parchment: #f5f5f7;
+      --surface: #fafafc;
+      --dark-1: #272729;
+      --dark-2: #2a2a2c;
+      --white: #ffffff;
+      --radius-lg: 18px;
+      --radius-md: 11px;
+      --radius-pill: 9999px;
+      --font-display: "SF Pro Display", system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+      --font-text: "SF Pro Text", system-ui, -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: var(--font-text);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+    }
+
+    a { color: var(--primary); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .hero {
+      min-height: 54vh;
+      display: grid;
+      place-items: center;
+      padding: 96px 24px 80px;
+      text-align: center;
+      background: var(--canvas);
+    }
+
+    .hero-inner { max-width: 1080px; }
+
+    .kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 18px;
+      color: var(--primary);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+    }
+
+    .kicker-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+
+    h1 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(42px, 5.4vw, 72px);
+      font-weight: 600;
+      line-height: 1.05;
+      letter-spacing: -0.56px;
+      text-wrap: balance;
+    }
+
+    .lead {
+      max-width: 940px;
+      margin: 24px auto 0;
+      color: var(--ink-muted);
+      font-family: var(--font-display);
+      font-size: clamp(21px, 2.4vw, 28px);
+      font-weight: 400;
+      line-height: 1.25;
+      letter-spacing: 0.196px;
+      text-wrap: pretty;
+    }
+
+    .source-note {
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.43;
+      letter-spacing: -0.224px;
+    }
+
+    .section {
+      padding: 86px 24px 94px;
+      background: var(--canvas);
+    }
+
+    .section.parchment { background: var(--parchment); }
+    .section.dark { background: var(--dark-1); color: var(--white); }
+    .section.dark-2 { background: var(--dark-2); color: var(--white); }
+
+    .section-head {
+      max-width: 980px;
+      margin: 0 auto 44px;
+      text-align: center;
+    }
+
+    h2 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(34px, 3.2vw, 48px);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.28px;
+      text-wrap: balance;
+    }
+
+    .section-head p {
+      max-width: 820px;
+      margin: 16px auto 0;
+      color: var(--ink-muted);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+      text-wrap: pretty;
+    }
+
+    .dark .section-head p,
+    .dark-2 .section-head p { color: #cccccc; }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      padding: 8px 15px;
+      border-radius: var(--radius-pill);
+      background: var(--primary);
+      color: var(--white);
+      font-size: 14px;
+      line-height: 1.29;
+      letter-spacing: -0.224px;
+      white-space: nowrap;
+    }
+
+    .dark .pill,
+    .dark-2 .pill {
+      color: var(--primary-dark);
+      background: rgba(41, 151, 255, 0.13);
+      border: 1px solid rgba(41, 151, 255, 0.22);
+    }
+
+    .breach-flow {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .flow-card {
+      position: relative;
+      min-height: 220px;
+      padding: 24px;
+      border-radius: var(--radius-lg);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .flow-card:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: -11px;
+      width: 20px;
+      height: 1px;
+      background: var(--primary-dark);
+      z-index: 1;
+    }
+
+    .flow-card strong,
+    .gate-card strong,
+    .radar-card strong,
+    .summary-card strong {
+      display: block;
+      margin-top: 20px;
+      font-family: var(--font-display);
+      font-size: clamp(24px, 2.15vw, 34px);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.28px;
+      text-wrap: pretty;
+    }
+
+    .flow-card span,
+    .gate-card span,
+    .radar-card span,
+    .summary-card span {
+      display: block;
+      margin-top: 14px;
+      color: #cccccc;
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+      text-wrap: pretty;
+    }
+
+    .left-right {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .side-card {
+      min-height: 360px;
+      padding: clamp(30px, 4vw, 48px);
+      border-radius: var(--radius-lg);
+      background: var(--canvas);
+      border: 1px solid var(--hairline);
+    }
+
+    .side-card.dark {
+      background: var(--dark-1);
+      color: var(--white);
+      border-color: var(--dark-1);
+    }
+
+    .side-card h3 {
+      margin: 24px 0 14px;
+      font-family: var(--font-display);
+      font-size: clamp(30px, 2.8vw, 42px);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.28px;
+      text-wrap: balance;
+    }
+
+    .side-card p {
+      margin: 0;
+      color: var(--ink-muted);
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+      text-wrap: pretty;
+    }
+
+    .side-card.dark p { color: #cccccc; }
+
+    .mini-list {
+      margin-top: 26px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .mini-item {
+      padding: 13px 15px;
+      border-radius: var(--radius-md);
+      background: var(--surface);
+      border: 1px solid var(--divider);
+      color: var(--ink-muted);
+      font-size: 14px;
+      line-height: 1.43;
+      letter-spacing: -0.224px;
+    }
+
+    .side-card.dark .mini-item {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.14);
+      color: #cccccc;
+    }
+
+    .gate-line {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .gate-card {
+      position: relative;
+      min-height: 300px;
+      padding: 28px;
+      border-radius: var(--radius-lg);
+      background: var(--canvas);
+      border: 1px solid var(--hairline);
+    }
+
+    .gate-card:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      top: 44px;
+      right: -15px;
+      width: 30px;
+      height: 1px;
+      background: var(--primary);
+      z-index: 1;
+    }
+
+    .gate-card span { color: var(--ink-muted); }
+
+    .tool-chip {
+      margin-top: 18px;
+      display: inline-flex;
+      padding: 9px 13px;
+      border-radius: var(--radius-pill);
+      background: var(--parchment);
+      color: var(--primary);
+      font-size: 14px;
+      line-height: 1.29;
+      letter-spacing: -0.224px;
+    }
+
+    .monitor-layout {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.05fr 1.95fr;
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .radar-core {
+      min-height: 460px;
+      border-radius: var(--radius-lg);
+      background:
+        radial-gradient(circle at center, rgba(41, 151, 255, 0.22) 0 14%, transparent 15% 100%),
+        radial-gradient(circle at center, transparent 0 34%, rgba(41, 151, 255, 0.16) 35% 36%, transparent 37% 100%),
+        radial-gradient(circle at center, transparent 0 63%, rgba(41, 151, 255, 0.12) 64% 65%, transparent 66% 100%),
+        rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      display: grid;
+      place-items: center;
+      padding: 32px;
+      text-align: center;
+    }
+
+    .radar-core strong {
+      display: block;
+      font-family: var(--font-display);
+      font-size: clamp(34px, 3vw, 44px);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.28px;
+    }
+
+    .radar-core span {
+      display: block;
+      max-width: 280px;
+      margin-top: 16px;
+      color: #cccccc;
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+    }
+
+    .radar-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .radar-card {
+      min-height: 220px;
+      padding: 26px;
+      border-radius: var(--radius-lg);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+    }
+
+    .summary-grid {
+      max-width: 980px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .summary-card {
+      min-height: 300px;
+      padding: 36px;
+      border-radius: var(--radius-lg);
+      background: var(--canvas);
+      border: 1px solid var(--hairline);
+    }
+
+    .summary-card.dark {
+      background: var(--dark-1);
+      color: var(--white);
+      border-color: var(--dark-1);
+    }
+
+    .summary-card span { color: var(--ink-muted); }
+    .summary-card.dark span { color: #cccccc; }
+
+    .closing {
+      max-width: 860px;
+      margin: 44px auto 0;
+      padding: 34px 38px;
+      border-radius: var(--radius-lg);
+      background: var(--dark-1);
+      color: var(--white);
+      text-align: center;
+    }
+
+    .closing h2 { margin: 18px 0 0; }
+
+    .closing p {
+      margin: 18px auto 0;
+      max-width: 680px;
+      color: #cccccc;
+      font-size: 17px;
+      line-height: 1.47;
+      letter-spacing: -0.374px;
+    }
+
+    @media (max-width: 980px) {
+      .breach-flow,
+      .gate-line,
+      .left-right,
+      .monitor-layout,
+      .summary-grid,
+      .radar-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .flow-card:not(:last-child)::after,
+      .gate-card:not(:last-child)::after {
+        top: auto;
+        right: 50%;
+        bottom: -14px;
+        width: 1px;
+        height: 28px;
+      }
+    }
+  </style>
+  <meta name="zukai:published" content="2026-06-26" />
+  <link rel="stylesheet" href="../assets/site-chrome.css" />
+
+  <!-- zukai-head-meta:start -->
+  <meta name="description" content="生成AIがシークレットを混ぜる前提で、生成時・コミット前・CI・IaCで左から止め、漏れた後は監視で被害を小さくする。" />
+  <meta name="author" content="Go (@53able)" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://53able.github.io/zukai-blog-am/articles/zukai-ai-defense-apple.html" />
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png" />
+  <meta name="theme-color" content="#0066cc" />
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Algomatic Tech Blog 図解ギャラリー" />
+  <meta property="og:locale" content="ja_JP" />
+  <meta property="og:title" content="AI開発は、防御して速くなる" />
+  <meta property="og:description" content="生成AIがシークレットを混ぜる前提で、生成時・コミット前・CI・IaCで左から止め、漏れた後は監視で被害を小さくする。" />
+  <meta property="og:url" content="https://53able.github.io/zukai-blog-am/articles/zukai-ai-defense-apple.html" />
+  <meta property="og:image" content="https://53able.github.io/zukai-blog-am/assets/og-default.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="AI開発は、防御して速くなる" />
+  <meta property="article:published_time" content="2026-06-26T00:00:00+09:00" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="AI開発は、防御して速くなる" />
+  <meta name="twitter:description" content="生成AIがシークレットを混ぜる前提で、生成時・コミット前・CI・IaCで左から止め、漏れた後は監視で被害を小さくする。" />
+  <meta name="twitter:image" content="https://53able.github.io/zukai-blog-am/assets/og-default.png" />
+  <meta name="twitter:image:alt" content="AI開発は、防御して速くなる" />
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "AI開発は、防御して速くなる",
+  "description": "生成AIがシークレットを混ぜる前提で、生成時・コミット前・CI・IaCで左から止め、漏れた後は監視で被害を小さくする。",
+  "datePublished": "2026-06-26T00:00:00+09:00",
+  "author": {
+    "@type": "Person",
+    "name": "Go (@53able)"
+  },
+  "isPartOf": {
+    "@type": "WebSite",
+    "name": "Algomatic Tech Blog 図解ギャラリー",
+    "url": "https://53able.github.io/zukai-blog-am/"
+  },
+  "mainEntityOfPage": "https://53able.github.io/zukai-blog-am/articles/zukai-ai-defense-apple.html",
+  "image": [
+    "https://53able.github.io/zukai-blog-am/assets/og-default.png"
+  ],
+  "inLanguage": "ja"
+}
+  </script>
+<!-- zukai-head-meta:end -->
+</head>
+<body>
+  <nav class="site-chrome-nav site-chrome-bar" aria-label="サイト">
+    <div class="site-chrome-nav-inner">
+      <a href="../index.html">← 図解ギャラリー</a>
+      <a href="https://tech.algomatic.jp/entry/advent-calendar/2026-06/defense-in-depth-for-ai-development">元記事を読む</a>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero" aria-labelledby="title">
+      <div class="hero-inner">
+        <div class="kicker"><span class="kicker-dot"></span>図解構成 / Defense in Depth for AI Development</div>
+        <h1 id="title">AI開発は、<br>防御して速くなる。</h1>
+        <p class="lead">生成AIがシークレットを混ぜる前提で、生成時・コミット前・CI・IaCで左から止め、漏れた後は監視で被害を小さくする。</p>
+        <p class="source-note">Source: Algomatic Tech Blog「<a href="https://tech.algomatic.jp/entry/advent-calendar/2026-06/defense-in-depth-for-ai-development">AI開発時代の多層防御を設計する〜AWSアクセスキーにまつわる怖い話〜</a>」をもとに再構成。</p>
+      </div>
+    </section>
+
+    <section class="section dark" aria-label="AWSアクセスキー漏洩の流れ">
+      <div class="section-head">
+        <h2>怖いのは、混ざった後の速さ。</h2>
+        <p>シークレットは、コードに入った瞬間から漏洩候補になります。公開後は攻撃者に見つかり、正規のクラウドAPIで費用と被害を広げられます。</p>
+      </div>
+
+      <div class="breach-flow">
+        <article class="flow-card">
+          <span class="pill">1</span>
+          <strong>AIがキーを混ぜる。</strong>
+          <span>一発で動くコードを急ぐほど、認証情報の直書きが紛れ込みます。</span>
+        </article>
+        <article class="flow-card">
+          <span class="pill">2</span>
+          <strong>Gitやデプロイで露出する。</strong>
+          <span>レビューをすり抜けると、公開リポジトリや成果物に残ります。</span>
+        </article>
+        <article class="flow-card">
+          <span class="pill">3</span>
+          <strong>攻撃者が拾う。</strong>
+          <span>漏れた認証情報は短時間で外部に発見される前提で考えます。</span>
+        </article>
+        <article class="flow-card">
+          <span class="pill">4</span>
+          <strong>計算資源を回される。</strong>
+          <span>Cryptojacking や LLMjacking は、他人の財布で計算する攻撃です。</span>
+        </article>
+        <article class="flow-card">
+          <span class="pill">5</span>
+          <strong>調査と請求が残る。</strong>
+          <span>返金交渉には、いつ・どのキーで・何が起きたかの説明が必要です。</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="section parchment" aria-label="左と右の多層防御">
+      <div class="section-head">
+        <h2>防御は、左と右に分けて置く。</h2>
+        <p>左は漏らさないためのゲート。右は漏れた後に被害を抑える監視。どちらか一方ではなく、役割を分けて重ねます。</p>
+      </div>
+
+      <div class="left-right">
+        <article class="side-card">
+          <span class="pill">Shift Left</span>
+          <h3>発生源で弾く。</h3>
+          <p>AIが生成する瞬間、コミット前、CI、IaCの順にゲートを置きます。人間が気づく前に、仕組みで止めます。</p>
+          <div class="mini-list">
+            <div class="mini-item">AI Hook / secret scan</div>
+            <div class="mini-item">pre-commit</div>
+            <div class="mini-item">GitHub Secret Scanning</div>
+            <div class="mini-item">cdk-nag / tfsec / Checkov</div>
+          </div>
+        </article>
+
+        <article class="side-card dark">
+          <span class="pill">Monitoring</span>
+          <h3>漏れても広げない。</h3>
+          <p>コスト、APIコール、不審な挙動を全リージョンで見ます。異常を通知し、最小権限で被害範囲を狭めます。</p>
+          <div class="mini-list">
+            <div class="mini-item">Cost Anomaly Detection</div>
+            <div class="mini-item">CloudTrail / GuardDuty</div>
+            <div class="mini-item">EventBridge → SNS / Slack</div>
+            <div class="mini-item">Least privilege</div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" aria-label="シフトレフトの4つのゲート">
+      <div class="section-head">
+        <h2>左で止めるほど、安い。</h2>
+        <p>漏洩後の調査や課金対応より、生成直後に弾くほうが安くて速い。AI時代のシフトレフトは、プロンプト投入前やツール実行前まで前倒しします。</p>
+      </div>
+
+      <div class="gate-line">
+        <article class="gate-card">
+          <span class="pill">Gate 1</span>
+          <strong>生成の瞬間</strong>
+          <span>AIがコードを書く前後で、シークレットらしい値を検知します。</span>
+          <div class="tool-chip">AI Hook / ggshield</div>
+        </article>
+        <article class="gate-card">
+          <span class="pill">Gate 2</span>
+          <strong>コミット前</strong>
+          <span>ローカルで完結する pre-commit により、push 前に止めます。</span>
+          <div class="tool-chip">gitleaks / TruffleHog</div>
+        </article>
+        <article class="gate-card">
+          <span class="pill">Gate 3</span>
+          <strong>CI</strong>
+          <span>ローカルを抜けた場合でも、リモート到達前後の自動検知で止めます。</span>
+          <div class="tool-chip">Secret Scanning</div>
+        </article>
+        <article class="gate-card">
+          <span class="pill">Gate 4</span>
+          <strong>IaC</strong>
+          <span>最小権限、長命キー禁止、IMDSv2強制をコードに焼き込みます。</span>
+          <div class="tool-chip">cdk-nag / Checkov</div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section dark-2" aria-label="漏洩後の監視設計">
+      <div class="section-head">
+        <h2>右側では、攻撃の足跡を見る。</h2>
+        <p>攻撃者は正規のAWS APIを順に叩きます。だから CloudTrail に残るイベントと、急な課金変化を監視します。</p>
+      </div>
+
+      <div class="monitor-layout">
+        <div class="radar-core" role="img" aria-label="全リージョン監視">
+          <div>
+            <strong>All Regions</strong>
+            <span>使っていないリージョンも、攻撃者にとっては使える場所です。</span>
+          </div>
+        </div>
+
+        <div class="radar-grid">
+          <article class="radar-card">
+            <span class="pill">Cost</span>
+            <strong>課金の急増</strong>
+            <span>Cost Anomaly Detection で、マイニングやLLM利用による異常な支出を拾います。</span>
+          </article>
+          <article class="radar-card">
+            <span class="pill">Discovery</span>
+            <strong>探索の連発</strong>
+            <span>GetCallerIdentity、List*、Describe* の短時間連発は侵入直後のサインです。</span>
+          </article>
+          <article class="radar-card">
+            <span class="pill">Privilege</span>
+            <strong>権限の拡大</strong>
+            <span>AttachUserPolicy、UpdateAssumeRolePolicy、AssumeRole を危険信号として扱います。</span>
+          </article>
+          <article class="radar-card">
+            <span class="pill">Persistence</span>
+            <strong>裏口と証拠隠滅</strong>
+            <span>CreateAccessKey、CreateLoginProfile、StopLogging、DeleteTrail を通知へつなぎます。</span>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section parchment" aria-label="まとめ">
+      <div class="section-head">
+        <h2>防御は、ブレーキではない。</h2>
+        <p>「漏らさない」と「漏れても広げない」を自動化するから、AIに任せる範囲を広げられます。</p>
+      </div>
+
+      <div class="summary-grid">
+        <article class="summary-card">
+          <span class="pill">Left</span>
+          <strong>漏らさない。</strong>
+          <span>生成時、コミット前、CI、IaCでシークレットと危険な設定を止めます。</span>
+        </article>
+        <article class="summary-card dark">
+          <span class="pill">Right</span>
+          <strong>漏れても広げない。</strong>
+          <span>コスト、APIコール、不審挙動、全リージョンを見て、被害を小さくします。</span>
+        </article>
+      </div>
+
+      <div class="closing">
+        <span class="pill">Conclusion</span>
+        <h2>守れるから、速く走れる。</h2>
+        <p>生成AI開発の速度を落とすためではなく、安心して任せるために多層防御を先に設計します。</p>
+      </div>
+    </section>
+
+    <footer class="footer site-chrome-footer">
+      <p>Algomatic Tech Blog の記事を zukai-creator で再構成した非公式図解です。</p>
+      <p>© 図解構成: Go (@53able) · Designed with Apple-style tokens</p>
+    </footer>
+  </main>
+</body>
+</html>

@@ -1,6 +1,14 @@
 {
   "entries": [
     {
+      "title": "AI開発は、防御して速くなる",
+      "publishedAt": "2026-06-26",
+      "htmlPath": "articles/zukai-ai-defense-apple.html",
+      "sourceUrl": "https://tech.algomatic.jp/entry/advent-calendar/2026-06/defense-in-depth-for-ai-development",
+      "sourceTitle": "AI開発時代の多層防御を設計する〜AWSアクセスキーにまつわる怖い話〜",
+      "lead": "生成AIがシークレットを混ぜる前提で、生成時・コミット前・CI・IaCで左から止め、漏れた後は監視で被害を小さくする。"
+    },
+    {
       "title": "Agent followは、Neovimを追従させる",
       "publishedAt": "2026-06-24",
       "htmlPath": "articles/zukai-agent-follow-apple.html",
