@@ -1,6 +1,22 @@
 {
   "entries": [
     {
+      "title": "AI時代にどのようなデータが企業の資産になるのか",
+      "publishedAt": "2026-06-30",
+      "htmlPath": "articles/zukai-data-asset-apple.html",
+      "sourceUrl": "https://tech.algomatic.jp/entry/2026/06/30/144814",
+      "sourceTitle": "AI時代にどのようなデータが企業の資産になるのか",
+      "lead": "データ蓄積から、オントロジーで人とAIの役割を定義し、組織を作り替える力へ。"
+    },
+    {
+      "title": "デザイナーは翻訳者ではなくなるのか",
+      "publishedAt": "2026-06-29",
+      "htmlPath": "articles/zukai-design-shift-apple.html",
+      "sourceUrl": "https://tech.algomatic.jp/entry/advent-calendar/2026-06/designers-translators",
+      "sourceTitle": "デザイナーは翻訳者ではなくなるのか",
+      "lead": "Figma中心の翻訳作業から、AIによって実物検証へ移り、デザイナーが本来の相手であるユーザーへ向き合いやすくなる。"
+    },
+    {
       "title": "AI開発は、防御して速くなる",
       "publishedAt": "2026-06-26",
       "htmlPath": "articles/zukai-ai-defense-apple.html",
